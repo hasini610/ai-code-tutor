@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Helper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Code Helper</h1>
+            <p class="text-gray-600">Get hints for your coding problems</p>
+        </header>
+
+        <main class="space-y-8">
+            <!-- Code Section with Language Selection and Execution -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Problem Statement Section (4 columns on desktop) -->
+                <div class="lg:col-span-4">
+                    <section class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Problem Statement</h2>
+                        <textarea 
+                            id="problemStatement"
+                            class="w-full h-48 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter your problem statement here..."
+                        ></textarea>
+                    </section>
+                </div>
+
+                <!-- Code Editor/Output Section (8 columns on desktop) -->
+                <div class="lg:col-span-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Left Column: Code Editor -->
+                        <div>
+                            <section class="bg-white rounded-lg shadow-md p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-2xl font-semibold text-gray-800">My Code</h2>
+                                    <div class="flex items-center space-x-2">
+                                        <label for="languageSelect" class="text-sm font-medium text-gray-700">Language:</label>
+                                        <select 
+                                            id="languageSelect"
+                                            class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                        >
+                                            <option value="python">Python</option>
+                                            <option value="java">Java</option>
+                                            <option value="c">C</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    id="myCode"
+                                    class="w-full h-64 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                                    placeholder="Enter your code here..."
+                                ></textarea>
+                                
+                                <!-- Action Buttons -->
+                                <div class="flex justify-center space-x-4 mt-4">
+                                    <button 
+                                        id="getHintBtn"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition duration-200 transform hover:scale-105"
+                                        onclick="getHints()"
+                                    >
+                                        Get Hint
+                                    </button>
+                                    <button 
+                                        id="runCodeBtn"
+                                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition duration-200 transform hover:scale-105"
+                                        onclick="runCode()"
+                                    >
+                                        Run Code
+                                    </button>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- Right Column: Execution Output -->
+                        <div>
+                            <section class="bg-white rounded-lg shadow-md p-6">
+                                <h2 class="text-xl font-semibold text-gray-800 mb-4">Execution Output</h2>
+                                
+                                <!-- Custom Input Section -->
+                                <div class="mb-4">
+                                    <label for="customInput" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Custom Input (optional):
+                                    </label>
+                                    <textarea 
+                                        id="customInput"
+                                        class="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                                        placeholder="Enter input for your code (e.g., numbers, text, etc.)"
+                                    ></textarea>
+                                </div>
+                        
+                        <!-- Loading State -->
+                        <div id="executionLoading" class="hidden">
+                            <div class="flex items-center justify-center py-8">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                <span class="ml-2 text-gray-600">Running code...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Output Display -->
+                        <div id="executionOutput" class="space-y-3">
+                            <div id="stdout" class="hidden">
+                                <h3 class="text-sm font-semibold text-gray-700 mb-1">Output:</h3>
+                                <pre class="bg-gray-100 p-3 rounded text-sm font-mono text-gray-800 max-h-96 overflow-auto"></pre>
+                            </div>
+                            
+                            <div id="stderr" class="hidden">
+                                <h3 class="text-sm font-semibold text-red-700 mb-1">Error:</h3>
+                                <pre class="bg-red-50 p-3 rounded text-sm font-mono text-red-800 max-h-96 overflow-auto"></pre>
+                            </div>
+                            
+                            <div id="compileOutput" class="hidden">
+                                <h3 class="text-sm font-semibold text-orange-700 mb-1">Compilation:</h3>
+                                <pre class="bg-orange-50 p-3 rounded text-sm font-mono text-orange-800 max-h-96 overflow-auto"></pre>
+                            </div>
+                            
+                            <div id="executionInfo" class="hidden">
+                                <div class="text-xs text-gray-600 space-y-1">
+                                    <div>Time: <span id="execTime"></span></div>
+                                    <div>Memory: <span id="execMemory"></span></div>
+                                    <div>Exit Code: <span id="exitCode"></span></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Empty State -->
+                            <div id="emptyOutput" class="text-center py-8 text-gray-500 text-sm">
+                                Click "Run Code" to see execution results
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Correct Code Message -->
+            <section id="correctSection" class="hidden">
+                <div class="bg-green-50 border-l-4 border-green-500 rounded-lg shadow-md p-8 text-center">
+                    <div class="flex justify-center mb-4">
+                        <svg class="h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-green-800 mb-2">Correct!</h2>
+                    <p id="correctMessage" class="text-green-700 text-lg"></p>
+                </div>
+            </section>
+
+            <!-- Hints Section -->
+            <section id="hintsSection" class="space-y-4 hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 text-center">Hints</h2>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Hint 1 Card -->
+                    <div id="hint1Card" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500 hidden">
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mr-3">1</div>
+                            <h3 class="text-lg font-semibold text-gray-800">Getting Started</h3>
+                        </div>
+                        <p id="hint1" class="text-gray-600 mb-4">
+                            Start by understanding the problem requirements and breaking it down into smaller, manageable steps.
+                        </p>
+                        <button id="showHint2Btn" class="bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2 px-4 rounded-lg transition duration-200 text-sm hidden" onclick="showHint(2)">
+                            💭 I'm still stuck, show Hint 2
+                        </button>
+                    </div>
+
+                    <!-- Hint 2 Card -->
+                    <div id="hint2Card" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500 hidden">
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold mr-3">2</div>
+                            <h3 class="text-lg font-semibold text-gray-800">Getting Closer</h3>
+                        </div>
+                        <p id="hint2" class="text-gray-600 mb-4">
+                            Consider the data structures and algorithms that would be most efficient for solving this problem.
+                        </p>
+                        <button id="showHint3Btn" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-medium py-2 px-4 rounded-lg transition duration-200 text-sm hidden" onclick="showHint(3)">
+                            🤔 Need more help, show Hint 3
+                        </button>
+                    </div>
+
+                    <!-- Hint 3 Card -->
+                    <div id="hint3Card" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500 hidden">
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold mr-3">3</div>
+                            <h3 class="text-lg font-semibold text-gray-800">Almost There</h3>
+                        </div>
+                        <p id="hint3" class="text-gray-600 mb-4">
+                            Test your solution with edge cases and ensure it handles all possible inputs correctly.
+                        </p>
+                        <button id="showSolutionBtn" class="bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-4 rounded-lg transition duration-200 text-sm hidden" onclick="showSolution()">
+                            💡 Show me the solution
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Solution Section -->
+                <div id="solutionSection" class="hidden">
+                    <div class="bg-gray-900 rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-3">✓</div>
+                            <h3 class="text-lg font-semibold text-white">Complete Solution</h3>
+                        </div>
+                        <pre id="solutionCode" class="text-gray-300 font-mono text-sm overflow-x-auto">
+                            <!-- Solution will be inserted here -->
+                        </pre>
+                    </div>
+                </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Global variable to store hints and solution
+        let storedHints = {};
+        let storedSolution = '';
+        
+        async function getHints() {
+            const hintsSection = document.getElementById('hintsSection');
+            const problemStatement = document.getElementById('problemStatement').value.trim();
+            const myCode = document.getElementById('myCode').value.trim();
+            const language = document.getElementById('languageSelect').value;
+            const getHintBtn = document.getElementById('getHintBtn');
+            
+            if (!problemStatement && !myCode) {
+                alert('Please enter a problem statement or your code to get hints.');
+                return;
+            }
+            
+            // Clear previous hints and solution
+            clearPreviousHints();
+            
+            // Disable button and show loading state
+            getHintBtn.disabled = true;
+            getHintBtn.textContent = 'Thinking...';
+            getHintBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            
+            try {
+                const requestData = {
+                    problemStatement: problemStatement,
+                    userCode: myCode,
+                    language: language
+                };
+                console.log('Sending request:', requestData);
+                
+                const response = await fetch('/get-hints', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (response.ok) {
+                    if (data.status === 'correct') {
+                        showCorrectCodeMessage(data.message);
+                    } else if (data.hint1) {
+                        // Store hints and solution globally
+                        storedHints = {
+                            hint1: data.hint1,
+                            hint2: data.hint2,
+                            hint3: data.hint3
+                        };
+                        storedSolution = data.solution || '# Solution not available';
+                        
+                        // Update hint cards with AI-generated hints
+                        document.getElementById('hint1').textContent = storedHints.hint1;
+                        document.getElementById('hint2').textContent = storedHints.hint2;
+                        document.getElementById('hint3').textContent = storedHints.hint3;
+                        
+                        // Update solution code
+                        document.getElementById('solutionCode').textContent = storedSolution;
+                        
+                        // Show hints section with animation
+                        hintsSection.classList.remove('hidden');
+                        hintsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Show Hint 1 and enable Hint 2 button
+                        document.getElementById('hint1Card').classList.remove('hidden');
+                        document.getElementById('showHint2Btn').classList.remove('hidden');
+                    } else {
+                        alert(data.error || 'Unexpected response from server. Please try again.');
+                    }
+                } else {
+                    // Show detailed error message
+                    console.error('Server error response:', data);
+                    const errorMsg = data.error || 'Failed to get hints. Please try again.';
+                    console.error('Error message:', errorMsg);
+                    alert(`Server Error: ${errorMsg}\n\nStatus: ${response.status}\nPlease check the console for more details.`);
+                }
+            } catch (error) {
+                console.error('Network/JavaScript error:', error);
+                alert(`Network Error: ${error.message}\n\nPlease check your connection and try again.`);
+            } finally {
+                // Re-enable button
+                getHintBtn.disabled = false;
+                getHintBtn.textContent = 'Get Hint';
+                getHintBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        }
+        
+        async function runCode() {
+            const myCode = document.getElementById('myCode').value.trim();
+            const language = document.getElementById('languageSelect').value;
+            const customInput = document.getElementById('customInput').value.trim();
+            const runCodeBtn = document.getElementById('runCodeBtn');
+            
+            if (!myCode) {
+                alert('Please enter some code to run.');
+                return;
+            }
+            
+            // Clear previous output
+            clearExecutionOutput();
+            
+            // Show loading state
+            runCodeBtn.disabled = true;
+            runCodeBtn.textContent = 'Running...';
+            runCodeBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            document.getElementById('executionLoading').classList.remove('hidden');
+            document.getElementById('emptyOutput').classList.add('hidden');
+            
+            try {
+                const response = await fetch('/run-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        source_code: myCode,
+                        language: language,
+                        stdin: customInput
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayExecutionResults(data);
+                } else {
+                    showError(data.error || 'Failed to run code. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error. Please check your connection and try again.');
+            } finally {
+                // Re-enable button and hide loading
+                runCodeBtn.disabled = false;
+                runCodeBtn.textContent = 'Run Code';
+                runCodeBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                document.getElementById('executionLoading').classList.add('hidden');
+            }
+        }
+        
+        function displayExecutionResults(data) {
+            // Hide empty state
+            document.getElementById('emptyOutput').classList.add('hidden');
+            
+            // Display stdout if present
+            if (data.stdout && data.stdout.trim()) {
+                const stdoutDiv = document.getElementById('stdout');
+                stdoutDiv.querySelector('pre').textContent = data.stdout;
+                stdoutDiv.classList.remove('hidden');
+            }
+            
+            // Display stderr if present
+            if (data.stderr && data.stderr.trim()) {
+                const stderrDiv = document.getElementById('stderr');
+                stderrDiv.querySelector('pre').textContent = data.stderr;
+                stderrDiv.classList.remove('hidden');
+            }
+            
+            // Display compile output if present
+            if (data.compile_output && data.compile_output.trim()) {
+                const compileDiv = document.getElementById('compileOutput');
+                compileDiv.querySelector('pre').textContent = data.compile_output;
+                compileDiv.classList.remove('hidden');
+            }
+            
+            // Display execution info
+            if (data.time || data.memory || data.exit_code !== undefined || data.status) {
+                const timeVal = data.time ? (String(data.time).endsWith('s') ? data.time : `${data.time}s`) : 'N/A';
+                document.getElementById('execTime').textContent = timeVal;
+                document.getElementById('execMemory').textContent = data.memory ? `${data.memory} KB` : 'N/A';
+                document.getElementById('exitCode').textContent = data.exit_code !== undefined ? data.exit_code : 'N/A';
+                document.getElementById('executionInfo').classList.remove('hidden');
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('emptyOutput').classList.add('hidden');
+            document.getElementById('executionLoading').classList.add('hidden');
+            
+            const stderrDiv = document.getElementById('stderr');
+            stderrDiv.querySelector('pre').textContent = message;
+            stderrDiv.classList.remove('hidden');
+        }
+        
+        function clearExecutionOutput() {
+            // Hide all output sections
+            document.getElementById('stdout').classList.add('hidden');
+            document.getElementById('stderr').classList.add('hidden');
+            document.getElementById('compileOutput').classList.add('hidden');
+            document.getElementById('executionInfo').classList.add('hidden');
+            
+            // Clear content
+            document.getElementById('stdout').querySelector('pre').textContent = '';
+            document.getElementById('stderr').querySelector('pre').textContent = '';
+            document.getElementById('compileOutput').querySelector('pre').textContent = '';
+            
+            // Show empty state
+            document.getElementById('emptyOutput').classList.remove('hidden');
+        }
+        
+        function showHint(hintNumber) {
+            if (hintNumber === 2) {
+                // Show Hint 2 card
+                document.getElementById('hint2Card').classList.remove('hidden');
+                // Hide Hint 1's button
+                document.getElementById('showHint2Btn').classList.add('hidden');
+                // Show Hint 3 button
+                document.getElementById('showHint3Btn').classList.remove('hidden');
+                // Scroll to Hint 2
+                document.getElementById('hint2Card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (hintNumber === 3) {
+                // Show Hint 3 card
+                document.getElementById('hint3Card').classList.remove('hidden');
+                // Hide Hint 2's button
+                document.getElementById('showHint3Btn').classList.add('hidden');
+                // Show solution button
+                document.getElementById('showSolutionBtn').classList.remove('hidden');
+                // Scroll to Hint 3
+                document.getElementById('hint3Card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        function showSolution() {
+            // Show solution section
+            document.getElementById('solutionSection').classList.remove('hidden');
+            // Hide solution button
+            document.getElementById('showSolutionBtn').classList.add('hidden');
+            // Scroll to solution
+            document.getElementById('solutionSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function showCorrectCodeMessage(message) {
+            clearPreviousHints();
+            document.getElementById('hintsSection').classList.add('hidden');
+            document.getElementById('correctMessage').textContent = message || 'Your code is correct! Well done.';
+            const correctSection = document.getElementById('correctSection');
+            correctSection.classList.remove('hidden');
+            correctSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function clearPreviousHints() {
+            document.getElementById('correctSection').classList.add('hidden');
+            document.getElementById('hintsSection').classList.add('hidden');
+
+            // Hide all hint cards
+            document.getElementById('hint1Card').classList.add('hidden');
+            document.getElementById('hint2Card').classList.add('hidden');
+            document.getElementById('hint3Card').classList.add('hidden');
+            
+            // Hide all hint buttons (they're inside the cards now)
+            document.getElementById('showHint2Btn').classList.add('hidden');
+            document.getElementById('showHint3Btn').classList.add('hidden');
+            document.getElementById('showSolutionBtn').classList.add('hidden');
+            
+            // Hide solution section
+            document.getElementById('solutionSection').classList.add('hidden');
+            
+            // Clear stored hints and solution
+            storedHints = {};
+            storedSolution = '';
+        }
+    </script>
+</body>
+</html>
