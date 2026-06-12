@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}{{ problem.title }} — Code Helper{% endblock %}
+
+{% block body %}
+<main class="mx-auto max-w-[1600px] px-4 py-6 sm:px-6">
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+        <a href="{{ url_for('dashboard') }}" class="text-sm text-slate-400 hover:text-indigo-300 transition">← All challenges</a>
+        {% if problem.difficulty == 'Easy' %}
+        <span class="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3 py-0.5 text-xs font-semibold uppercase text-emerald-400">Easy</span>
+        {% else %}
+        <span class="rounded-full border border-amber-500/40 bg-amber-500/15 px-3 py-0.5 text-xs font-semibold uppercase text-amber-400">Medium</span>
+        {% endif %}
+    </div>
+
+    <div class="flex min-h-[calc(100vh-8rem)] flex-col gap-4 lg:flex-row lg:gap-0">
+        <!-- Left: problem description -->
+        <aside class="flex w-full flex-col border-slate-800 lg:w-[42%] lg:border-r lg:pr-6">
+            <h1 class="text-2xl font-bold text-white sm:text-3xl">{{ problem.title }}</h1>
+            <textarea id="problemStatement" class="hidden" readonly>{{ problem.description }}</textarea>
+            <div class="problem-description mt-6 flex-1 overflow-y-auto rounded-xl border border-slate-800 bg-slate-900/60 p-5 text-sm leading-relaxed text-slate-300">
+                {{ problem.description_html | safe }}
+            </div>
+        </aside>
+
+        <!-- Right: code workspace -->
+        <div class="flex w-full flex-1 flex-col lg:w-[58%] lg:pl-6">
+            <div class="grid flex-1 grid-cols-1 gap-4 xl:grid-cols-2">
+                <section class="flex flex-col rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+                    <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="text-lg font-semibold text-white">Your solution</h2>
+                        <select id="languageSelect"
+                                class="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="c">C</option>
+                        </select>
+                    </div>
+                    <textarea id="myCode"
+                              class="min-h-[280px] flex-1 w-full resize-none rounded-lg border border-slate-700 bg-slate-950 p-4 font-mono text-sm text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              placeholder="# Write your solution here..."></textarea>
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        <button id="submitTestsBtn" type="button" onclick="submitTests()"
+                                class="rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-500">
+                            Submit
+                        </button>
+                        <button id="runCodeBtn" type="button" onclick="runCode()"
+                                class="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500">
+                            Run Code
+                        </button>
+                    </div>
+
+                    <div id="testResultsSection" class="mt-5 hidden">
+                        <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                            <h3 class="text-sm font-semibold text-white">Test results</h3>
+                            <p id="testResultsSummary" class="text-xs text-slate-400"></p>
+                        </div>
+                        <div id="testResultsGrid"
+                             class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                        </div>
+                        <button id="askCoachBtn" type="button" onclick="askAiCoach()"
+                                class="mt-4 w-full rounded-xl border border-indigo-500/50 bg-gradient-to-r from-indigo-600/90 to-violet-600/90 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-900/40 transition hover:from-indigo-500 hover:to-violet-500 sm:w-auto">
+                            Ask AI Coach for a Hint
+                        </button>
+                        <p id="coachHelperText" class="mt-2 text-xs text-slate-500">Submit your code first so the coach can see which tests failed.</p>
+                    </div>
+                </section>
+
+                <section class="flex flex-col rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+                    <h2 class="mb-3 text-lg font-semibold text-white">Output</h2>
+                    <label for="customInput" class="mb-1 block text-xs font-medium text-slate-400">Custom input (optional)</label>
+                    <textarea id="customInput"
+                              class="mb-3 h-20 w-full resize-none rounded-lg border border-slate-700 bg-slate-950 p-3 font-mono text-sm text-slate-100 focus:border-indigo-500 focus:outline-none"
+                              placeholder="stdin for your program"></textarea>
+                    <div id="executionLoading" class="hidden py-6 text-center text-slate-400 text-sm">Running code…</div>
+                    <div id="executionOutput" class="flex-1 overflow-y-auto text-sm">
+                        <div id="stdout" class="hidden mb-3">
+                            <h3 class="mb-1 text-xs font-semibold text-slate-400">stdout</h3>
+                            <pre class="rounded-lg bg-slate-950 p-3 font-mono text-slate-200 overflow-auto max-h-48"></pre>
+                        </div>
+                        <div id="stderr" class="hidden mb-3">
+                            <h3 class="mb-1 text-xs font-semibold text-rose-400">stderr</h3>
+                            <pre class="rounded-lg bg-rose-950/50 p-3 font-mono text-rose-200 overflow-auto max-h-48"></pre>
+                        </div>
+                        <div id="compileOutput" class="hidden mb-3">
+                            <h3 class="mb-1 text-xs font-semibold text-amber-400">compile</h3>
+                            <pre class="rounded-lg bg-amber-950/30 p-3 font-mono text-amber-200 overflow-auto max-h-48"></pre>
+                        </div>
+                        <div id="executionInfo" class="hidden text-xs text-slate-500 space-y-1">
+                            <div>Time: <span id="execTime"></span></div>
+                            <div>Memory: <span id="execMemory"></span></div>
+                            <div>Exit: <span id="exitCode"></span></div>
+                        </div>
+                        <div id="emptyOutput" class="py-8 text-center text-slate-500 text-sm">Run your code to see results</div>
+                    </div>
+                </section>
+            </div>
+
+            {% include "partials/coach_hints_section.html" %}
+        </div>
+    </div>
+</main>
+
+{% include "partials/workspace_scripts.html" %}
+<script>
+    const PROBLEM_ID = {{ problem.id }};
+    let lastTestResults = null;
+
+    async function submitTests() {
+        const sourceCode = document.getElementById('myCode').value.trim();
+        const language = document.getElementById('languageSelect').value;
+        const submitBtn = document.getElementById('submitTestsBtn');
+        const section = document.getElementById('testResultsSection');
+        const grid = document.getElementById('testResultsGrid');
+        const summary = document.getElementById('testResultsSummary');
+
+        if (!sourceCode) {
+            alert('Please write some code before submitting.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Running tests…';
+        submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+        grid.innerHTML = '<p class="col-span-full text-sm text-slate-400 py-4 text-center">Executing test cases…</p>';
+        section.classList.remove('hidden');
+
+        try {
+            const response = await fetch(`/api/problems/${PROBLEM_ID}/submit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ source_code: sourceCode, language }),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                if (data.results && data.results.length) {
+                    lastTestResults = data.results;
+                    renderTestResults(data.results, data.passed || 0, data.total || 0, false);
+                } else {
+                    grid.innerHTML = '';
+                    summary.textContent = '';
+                    const errCard = document.createElement('div');
+                    errCard.className = 'col-span-full rounded-lg border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-200';
+                    errCard.textContent = data.error || 'Submission failed.';
+                    grid.appendChild(errCard);
+                }
+                return;
+            }
+
+            lastTestResults = data.results;
+            renderTestResults(data.results, data.passed, data.total, data.all_passed);
+        } catch (err) {
+            grid.innerHTML = '';
+            summary.textContent = '';
+            const errCard = document.createElement('div');
+            errCard.className = 'col-span-full rounded-lg border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-200';
+            errCard.textContent = `Network error: ${err.message}`;
+            grid.appendChild(errCard);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit';
+            submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+    }
+
+    function renderTestResults(results, passed, total, allPassed) {
+        const grid = document.getElementById('testResultsGrid');
+        const summary = document.getElementById('testResultsSummary');
+        grid.innerHTML = '';
+
+        if (allPassed) {
+            summary.textContent = `All ${total} test case(s) passed`;
+            summary.className = 'text-xs font-medium text-emerald-400';
+        } else if (total > 0) {
+            summary.textContent = `${passed} / ${total} passed`;
+            summary.className = 'text-xs font-medium text-amber-400';
+        } else {
+            summary.textContent = 'No runnable test cases';
+            summary.className = 'text-xs text-slate-400';
+        }
+
+        results.forEach((result) => {
+            const card = document.createElement('article');
+            card.className = 'rounded-lg border p-3 text-sm';
+
+            if (result.status === 'passed') {
+                card.classList.add('border-emerald-500/40', 'bg-emerald-500/10');
+            } else if (result.status === 'skipped') {
+                card.classList.add('border-slate-600', 'bg-slate-800/50');
+            } else if (result.status === 'error') {
+                card.classList.add('border-rose-500/40', 'bg-rose-500/10');
+            } else {
+                card.classList.add('border-amber-500/40', 'bg-amber-500/10');
+            }
+
+            const title = document.createElement('div');
+            title.className = 'flex items-center justify-between gap-2 mb-1';
+            const name = document.createElement('span');
+            name.className = 'font-semibold text-white';
+            name.textContent = result.label;
+            const badge = document.createElement('span');
+            badge.className = 'text-xs font-bold uppercase tracking-wide';
+            if (result.status === 'passed') {
+                badge.textContent = 'Passed';
+                badge.classList.add('text-emerald-400');
+            } else if (result.status === 'skipped') {
+                badge.textContent = 'Skipped';
+                badge.classList.add('text-slate-400');
+            } else if (result.status === 'error') {
+                badge.textContent = 'Error';
+                badge.classList.add('text-rose-400');
+            } else {
+                badge.textContent = 'Failed';
+                badge.classList.add('text-amber-400');
+            }
+            title.appendChild(name);
+            title.appendChild(badge);
+
+            const message = document.createElement('p');
+            message.className = 'text-slate-300 text-xs leading-relaxed break-words';
+            message.textContent = result.message;
+
+            card.appendChild(title);
+            card.appendChild(message);
+
+            if (result.status === 'failed' || result.status === 'error') {
+                if (result.expected !== undefined && result.expected !== '') {
+                    const exp = document.createElement('p');
+                    exp.className = 'mt-2 text-xs font-mono text-slate-400 break-all';
+                    exp.innerHTML = `<span class="text-slate-500">Expected:</span> ${escapeHtml(result.expected)}`;
+                    card.appendChild(exp);
+                }
+                if (result.actual !== undefined && result.actual !== '') {
+                    const act = document.createElement('p');
+                    act.className = 'mt-1 text-xs font-mono text-slate-400 break-all';
+                    act.innerHTML = `<span class="text-slate-500">Got:</span> ${escapeHtml(result.actual)}`;
+                    card.appendChild(act);
+                }
+            }
+
+            grid.appendChild(card);
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function clearCoachHints() {
+        document.getElementById('correctSection').classList.add('hidden');
+        document.getElementById('hintsSection').classList.add('hidden');
+        document.getElementById('hint1Card').classList.add('hidden');
+        document.getElementById('hint2Card').classList.add('hidden');
+        document.getElementById('hint3Card').classList.add('hidden');
+        document.getElementById('showHint2Btn').classList.add('hidden');
+        document.getElementById('showHint3Btn').classList.add('hidden');
+    }
+
+    function displayCoachHints(data) {
+        clearCoachHints();
+        if (data.status === 'correct') {
+            document.getElementById('correctMessage').textContent = data.message || 'Your solution looks good!';
+            document.getElementById('correctSection').classList.remove('hidden');
+            document.getElementById('correctSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return;
+        }
+        document.getElementById('hint1').textContent = data.hint1;
+        document.getElementById('hint2').textContent = data.hint2;
+        document.getElementById('hint3').textContent = data.hint3;
+        document.getElementById('hintsSection').classList.remove('hidden');
+        document.getElementById('hint1Card').classList.remove('hidden');
+        document.getElementById('showHint2Btn').classList.remove('hidden');
+        document.getElementById('hintsSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    async function askAiCoach() {
+        const sourceCode = document.getElementById('myCode').value.trim();
+        const language = document.getElementById('languageSelect').value;
+        const problemStatement = document.getElementById('problemStatement').value.trim();
+        const coachBtn = document.getElementById('askCoachBtn');
+
+        if (!sourceCode) {
+            alert('Write your solution code before asking the AI Coach.');
+            return;
+        }
+
+        if (!lastTestResults || !lastTestResults.length) {
+            alert('Submit your solution against the test cases first, so the coach can analyze what failed.');
+            return;
+        }
+
+        const failingTests = lastTestResults.filter(
+            (r) => r.status === 'failed' || r.status === 'error'
+        );
+        const runnable = lastTestResults.filter((r) => r.status !== 'skipped');
+        if (runnable.length > 0 && failingTests.length === 0) {
+            alert('All tests passed! The coach works best when you have failing tests to debug.');
+            return;
+        }
+
+        coachBtn.disabled = true;
+        coachBtn.textContent = 'Coach is thinking…';
+        coachBtn.classList.add('opacity-75', 'cursor-not-allowed');
+        clearCoachHints();
+
+        try {
+            const response = await fetch(`/api/problems/${PROBLEM_ID}/coach`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    source_code: sourceCode,
+                    language,
+                    problem_statement: problemStatement,
+                    failing_tests: failingTests,
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                alert(data.error || 'Could not reach the AI Coach. Please try again.');
+                return;
+            }
+            displayCoachHints(data);
+        } catch (err) {
+            alert(`Network error: ${err.message}`);
+        } finally {
+            coachBtn.disabled = false;
+            coachBtn.textContent = 'Ask AI Coach for a Hint';
+            coachBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+    }
+</script>
+{% endblock %}

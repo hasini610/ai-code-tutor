@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Sandbox Playground — Code Helper{% endblock %}
+
+{% block body %}
+<div class="bg-gray-50 min-h-[calc(100vh-3.5rem)] text-gray-900">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Sandbox Playground</h1>
+            <p class="text-gray-600">Open-ended practice — paste any problem and code your solution</p>
+        </header>
+
+        <main class="space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-4">
+                    <section class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Problem Statement</h2>
+                        <textarea id="problemStatement"
+                                  class="w-full h-48 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Enter your problem statement here..."></textarea>
+                    </section>
+                </div>
+
+                <div class="lg:col-span-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <section class="bg-white rounded-lg shadow-md p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-2xl font-semibold text-gray-800">My Code</h2>
+                                    <div class="flex items-center space-x-2">
+                                        <label for="languageSelect" class="text-sm font-medium text-gray-700">Language:</label>
+                                        <select id="languageSelect"
+                                                class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                            <option value="python">Python</option>
+                                            <option value="java">Java</option>
+                                            <option value="c">C</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <textarea id="myCode"
+                                          class="w-full h-64 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                                          placeholder="Enter your code here..."></textarea>
+                                <div class="flex justify-center space-x-4 mt-4">
+                                    <button id="getHintBtn" type="button" onclick="getHints()"
+                                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md">
+                                        Get Hint
+                                    </button>
+                                    <button id="runCodeBtn" type="button" onclick="runCode()"
+                                            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md">
+                                        Run Code
+                                    </button>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div>
+                            <section class="bg-white rounded-lg shadow-md p-6">
+                                <h2 class="text-xl font-semibold text-gray-800 mb-4">Execution Output</h2>
+                                <div class="mb-4">
+                                    <label for="customInput" class="block text-sm font-medium text-gray-700 mb-2">Custom Input (optional):</label>
+                                    <textarea id="customInput"
+                                              class="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none font-mono text-sm focus:ring-2 focus:ring-blue-500"
+                                              placeholder="Enter input for your code"></textarea>
+                                </div>
+                                <div id="executionLoading" class="hidden py-8 text-center text-gray-600">Running code...</div>
+                                <div id="executionOutput" class="space-y-3">
+                                    <div id="stdout" class="hidden">
+                                        <h3 class="text-sm font-semibold text-gray-700 mb-1">Output:</h3>
+                                        <pre class="bg-gray-100 p-3 rounded text-sm font-mono max-h-96 overflow-auto"></pre>
+                                    </div>
+                                    <div id="stderr" class="hidden">
+                                        <h3 class="text-sm font-semibold text-red-700 mb-1">Error:</h3>
+                                        <pre class="bg-red-50 p-3 rounded text-sm font-mono text-red-800 max-h-96 overflow-auto"></pre>
+                                    </div>
+                                    <div id="compileOutput" class="hidden">
+                                        <h3 class="text-sm font-semibold text-orange-700 mb-1">Compilation:</h3>
+                                        <pre class="bg-orange-50 p-3 rounded text-sm font-mono text-orange-800 max-h-96 overflow-auto"></pre>
+                                    </div>
+                                    <div id="executionInfo" class="hidden text-xs text-gray-600 space-y-1">
+                                        <div>Time: <span id="execTime"></span></div>
+                                        <div>Memory: <span id="execMemory"></span></div>
+                                        <div>Exit Code: <span id="exitCode"></span></div>
+                                    </div>
+                                    <div id="emptyOutput" class="text-center py-8 text-gray-500 text-sm">Click "Run Code" to see execution results</div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section id="correctSection" class="hidden">
+                <div class="bg-green-50 border-l-4 border-green-500 rounded-lg shadow-md p-8 text-center">
+                    <h2 class="text-2xl font-bold text-green-800 mb-2">Correct!</h2>
+                    <p id="correctMessage" class="text-green-700 text-lg"></p>
+                </div>
+            </section>
+
+            <section id="hintsSection" class="space-y-4 hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 text-center">Hints</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div id="hint1Card" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500 hidden">
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mr-3">1</div>
+                            <h3 class="text-lg font-semibold text-gray-800">Getting Started</h3>
+                        </div>
+                        <p id="hint1" class="text-gray-600 mb-4"></p>
+                        <button id="showHint2Btn" class="text-sm text-green-700 hidden" onclick="showHint(2)">Show Hint 2</button>
+                    </div>
+                    <div id="hint2Card" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500 hidden">
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold mr-3">2</div>
+                            <h3 class="text-lg font-semibold text-gray-800">Getting Closer</h3>
+                        </div>
+                        <p id="hint2" class="text-gray-600 mb-4"></p>
+                        <button id="showHint3Btn" class="text-sm text-yellow-700 hidden" onclick="showHint(3)">Show Hint 3</button>
+                    </div>
+                    <div id="hint3Card" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500 hidden">
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold mr-3">3</div>
+                            <h3 class="text-lg font-semibold text-gray-800">Almost There</h3>
+                        </div>
+                        <p id="hint3" class="text-gray-600 mb-4"></p>
+                        <button id="showSolutionBtn" class="text-sm text-red-700 hidden" onclick="showSolution()">Show solution</button>
+                    </div>
+                </div>
+                <div id="solutionSection" class="hidden bg-gray-900 rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                    <h3 class="text-lg font-semibold text-white mb-3">Complete Solution</h3>
+                    <pre id="solutionCode" class="text-gray-300 font-mono text-sm overflow-x-auto whitespace-pre-wrap"></pre>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+{% include "partials/workspace_scripts.html" %}
+{% endblock %}

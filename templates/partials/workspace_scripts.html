@@ -1,0 +1,200 @@
+<script>
+    let storedHints = {};
+    let storedSolution = '';
+
+    function getProblemStatement() {
+        const el = document.getElementById('problemStatement');
+        if (!el) return '';
+        return el.tagName === 'TEXTAREA' ? el.value.trim() : (el.dataset.problemText || el.textContent || '').trim();
+    }
+
+    async function getHints() {
+        const hintsSection = document.getElementById('hintsSection');
+        const problemStatement = getProblemStatement();
+        const myCode = document.getElementById('myCode').value.trim();
+        const language = document.getElementById('languageSelect').value;
+        const getHintBtn = document.getElementById('getHintBtn');
+
+        if (!problemStatement && !myCode) {
+            alert('Please enter a problem statement or your code to get hints.');
+            return;
+        }
+
+        clearPreviousHints();
+
+        getHintBtn.disabled = true;
+        getHintBtn.textContent = 'Thinking...';
+        getHintBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+        try {
+            const response = await fetch('/get-hints', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ problemStatement, userCode: myCode, language }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data.status === 'correct') {
+                    showCorrectCodeMessage(data.message);
+                } else if (data.hint1) {
+                    storedHints = { hint1: data.hint1, hint2: data.hint2, hint3: data.hint3 };
+                    storedSolution = data.solution || '# Solution not available';
+                    document.getElementById('hint1').textContent = storedHints.hint1;
+                    document.getElementById('hint2').textContent = storedHints.hint2;
+                    document.getElementById('hint3').textContent = storedHints.hint3;
+                    document.getElementById('solutionCode').textContent = storedSolution;
+                    hintsSection.classList.remove('hidden');
+                    hintsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    document.getElementById('hint1Card').classList.remove('hidden');
+                    document.getElementById('showHint2Btn').classList.remove('hidden');
+                } else {
+                    alert(data.error || 'Unexpected response from server. Please try again.');
+                }
+            } else {
+                alert(data.error || 'Failed to get hints. Please try again.');
+            }
+        } catch (error) {
+            alert(`Network Error: ${error.message}`);
+        } finally {
+            getHintBtn.disabled = false;
+            getHintBtn.textContent = 'Get Hint';
+            getHintBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+    }
+
+    async function runCode() {
+        const myCode = document.getElementById('myCode').value.trim();
+        const language = document.getElementById('languageSelect').value;
+        const customInput = document.getElementById('customInput').value.trim();
+        const runCodeBtn = document.getElementById('runCodeBtn');
+
+        if (!myCode) {
+            alert('Please enter some code to run.');
+            return;
+        }
+
+        clearExecutionOutput();
+
+        runCodeBtn.disabled = true;
+        runCodeBtn.textContent = 'Running...';
+        runCodeBtn.classList.add('opacity-75', 'cursor-not-allowed');
+        document.getElementById('executionLoading').classList.remove('hidden');
+        document.getElementById('emptyOutput').classList.add('hidden');
+
+        try {
+            const response = await fetch('/run-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ source_code: myCode, language, stdin: customInput }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                displayExecutionResults(data);
+            } else {
+                showError(data.error || 'Failed to run code. Please try again.');
+            }
+        } catch (error) {
+            showError('Network error. Please check your connection and try again.');
+        } finally {
+            runCodeBtn.disabled = false;
+            runCodeBtn.textContent = 'Run Code';
+            runCodeBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            document.getElementById('executionLoading').classList.add('hidden');
+        }
+    }
+
+    function displayExecutionResults(data) {
+        document.getElementById('emptyOutput').classList.add('hidden');
+        if (data.stdout && data.stdout.trim()) {
+            const stdoutDiv = document.getElementById('stdout');
+            stdoutDiv.querySelector('pre').textContent = data.stdout;
+            stdoutDiv.classList.remove('hidden');
+        }
+        if (data.stderr && data.stderr.trim()) {
+            const stderrDiv = document.getElementById('stderr');
+            stderrDiv.querySelector('pre').textContent = data.stderr;
+            stderrDiv.classList.remove('hidden');
+        }
+        if (data.compile_output && data.compile_output.trim()) {
+            const compileDiv = document.getElementById('compileOutput');
+            compileDiv.querySelector('pre').textContent = data.compile_output;
+            compileDiv.classList.remove('hidden');
+        }
+        if (data.time || data.memory || data.exit_code !== undefined || data.status) {
+            const timeVal = data.time ? (String(data.time).endsWith('s') ? data.time : `${data.time}s`) : 'N/A';
+            document.getElementById('execTime').textContent = timeVal;
+            document.getElementById('execMemory').textContent = data.memory ? `${data.memory} KB` : 'N/A';
+            document.getElementById('exitCode').textContent = data.exit_code !== undefined ? data.exit_code : 'N/A';
+            document.getElementById('executionInfo').classList.remove('hidden');
+        }
+    }
+
+    function showError(message) {
+        document.getElementById('emptyOutput').classList.add('hidden');
+        document.getElementById('executionLoading').classList.add('hidden');
+        const stderrDiv = document.getElementById('stderr');
+        stderrDiv.querySelector('pre').textContent = message;
+        stderrDiv.classList.remove('hidden');
+    }
+
+    function clearExecutionOutput() {
+        document.getElementById('stdout').classList.add('hidden');
+        document.getElementById('stderr').classList.add('hidden');
+        document.getElementById('compileOutput').classList.add('hidden');
+        document.getElementById('executionInfo').classList.add('hidden');
+        document.getElementById('stdout').querySelector('pre').textContent = '';
+        document.getElementById('stderr').querySelector('pre').textContent = '';
+        document.getElementById('compileOutput').querySelector('pre').textContent = '';
+        document.getElementById('emptyOutput').classList.remove('hidden');
+    }
+
+    function showHint(hintNumber) {
+        if (hintNumber === 2) {
+            document.getElementById('hint2Card').classList.remove('hidden');
+            document.getElementById('showHint2Btn').classList.add('hidden');
+            document.getElementById('showHint3Btn').classList.remove('hidden');
+            document.getElementById('hint2Card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (hintNumber === 3) {
+            document.getElementById('hint3Card').classList.remove('hidden');
+            document.getElementById('showHint3Btn').classList.add('hidden');
+            const showSolutionBtn = document.getElementById('showSolutionBtn');
+            if (showSolutionBtn) showSolutionBtn.classList.remove('hidden');
+            document.getElementById('hint3Card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function showSolution() {
+        const solutionSection = document.getElementById('solutionSection');
+        const showSolutionBtn = document.getElementById('showSolutionBtn');
+        if (!solutionSection) return;
+        solutionSection.classList.remove('hidden');
+        if (showSolutionBtn) showSolutionBtn.classList.add('hidden');
+        solutionSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function showCorrectCodeMessage(message) {
+        clearPreviousHints();
+        document.getElementById('hintsSection').classList.add('hidden');
+        document.getElementById('correctMessage').textContent = message || 'Your code is correct! Well done.';
+        document.getElementById('correctSection').classList.remove('hidden');
+        document.getElementById('correctSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function clearPreviousHints() {
+        document.getElementById('correctSection').classList.add('hidden');
+        document.getElementById('hintsSection').classList.add('hidden');
+        document.getElementById('hint1Card').classList.add('hidden');
+        document.getElementById('hint2Card').classList.add('hidden');
+        document.getElementById('hint3Card').classList.add('hidden');
+        document.getElementById('showHint2Btn').classList.add('hidden');
+        document.getElementById('showHint3Btn').classList.add('hidden');
+        const showSolutionBtn = document.getElementById('showSolutionBtn');
+        const solutionSection = document.getElementById('solutionSection');
+        if (showSolutionBtn) showSolutionBtn.classList.add('hidden');
+        if (solutionSection) solutionSection.classList.add('hidden');
+        storedHints = {};
+        storedSolution = '';
+    }
+</script>

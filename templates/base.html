@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Code Helper{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#eef2ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+                    },
+                },
+            },
+        };
+    </script>
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
+    <nav class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+            <a href="{{ url_for('dashboard') }}" class="group flex items-center gap-2">
+                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-bold text-white shadow-lg shadow-indigo-500/25">CH</span>
+                <span class="text-lg font-semibold tracking-tight text-white group-hover:text-indigo-200 transition">Code Helper</span>
+            </a>
+            <div class="flex items-center gap-3">
+                <a href="{{ url_for('dashboard') }}"
+                   class="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white sm:inline-block">
+                    Challenges
+                </a>
+                <a href="{{ url_for('sandbox') }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2.5 text-sm font-bold text-slate-900 shadow-lg shadow-orange-500/30 transition hover:from-amber-300 hover:to-orange-400 hover:shadow-orange-400/40">
+                    🚀 Open Sandbox Playground
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    {% block body %}{% endblock %}
+</body>
+</html>

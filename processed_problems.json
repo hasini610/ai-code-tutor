@@ -1,0 +1,1714 @@
+{
+  "source": "leetcode_problems.csv",
+  "total_problems": 100,
+  "counts_by_difficulty": {
+    "Easy": 50,
+    "Medium": 50
+  },
+  "problems": [
+    {
+      "id": 1,
+      "title": "Two Sum",
+      "description": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nYou can return the answer in any order.\n\nExample 1:\nInput: nums = [2,7,11,15], target = 9\nOutput: [0,1]\nOutput: Because nums[0] + nums[1] == 9, we return [0, 1].\n\nExample 2:\nInput: nums = [3,2,4], target = 6\nOutput: [1,2]\n\nExample 3:\nInput: nums = [3,3], target = 6\nOutput: [0,1]\n\nConstraints:\n`2 <= nums.length <= 103`\n`-109 <= nums[i] <= 109`\n`-109 <= target <= 109`\nOnly one valid answer exists.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "4 2 7 11 15 9",
+          "expected_output": "[0, 1]"
+        },
+        {
+          "input": "3 3 2 4 6",
+          "expected_output": "[1, 2]"
+        },
+        {
+          "input": "2 3 3 6",
+          "expected_output": "[0, 1]"
+        }
+      ]
+    },
+    {
+      "id": 121,
+      "title": "Best Time to Buy and Sell Stock",
+      "description": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `ith` day.\n\nYou want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.\n\nReturn the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return `0`.\n\nExample 1:\nInput: prices = [7,1,5,3,6,4]\nOutput: 5\nExplanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.\n\nNote that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.\n\nExample 2:\nInput: prices = [7,6,4,3,1]\nOutput: 0\nExplanation: In this case, no transactions are done and the max profit = 0.\n\nConstraints:\n`1 <= prices.length <= 105`\n`0 <= prices[i] <= 104`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "6 7 1 5 3 6 4",
+          "expected_output": "5"
+        },
+        {
+          "input": "5 7 6 4 3 1",
+          "expected_output": "0"
+        }
+      ]
+    },
+    {
+      "id": 953,
+      "title": "Verifying an Alien Dictionary",
+      "description": "In an alien language, surprisingly they also use english lowercase letters, but possibly in a different `order`. The `order` of the alphabet is some permutation of lowercase letters.\n\nGiven a sequence of `words` written in the alien language, and the `order` of the alphabet, return `true` if and only if the given `words` are sorted lexicographicaly in this alien language.\n\nExample 1:\nInput: words = [\"hello\",\"leetcode\"], order = \"hlabcdefgijkmnopqrstuvwxyz\"\nOutput: true\nExplanation: As 'h' comes before 'l' in this language, then the sequence is sorted.\n\nExample 2:\nInput: words = [\"word\",\"world\",\"row\"], order = \"worldabcefghijkmnpqstuvxyz\"\nOutput: false\nExplanation: As 'd' comes after 'l' in this language, then words[0] > words[1], hence the sequence is unsorted.\n\nExample 3:\nInput: words = [\"apple\",\"app\"], order = \"abcdefghijklmnopqrstuvwxyz\"\nOutput: false\nExplanation: The first three characters \"app\" match, and the second string is shorter (in size.) According to lexicographical rules \"apple\" > \"app\", because 'l' > '∅', where '∅' is defined as the blank character which is less than any other character (More info).\n\nConstraints:\n`1 <= words.length <= 100`\n`1 <= words[i].length <= 20`\n`order.length == 26`\nAll characters in `words[i]` and `order` are English lowercase letters.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "2\nhello\nleetcode\nhlabcdefgijkmnopqrstuvwxyz",
+          "expected_output": "True"
+        },
+        {
+          "input": "3\nword\nworld\nrow\nworldabcefghijkmnpqstuvxyz",
+          "expected_output": "False"
+        },
+        {
+          "input": "2\napple\napp\nabcdefghijklmnopqrstuvwxyz",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "title": "Valid Parentheses",
+      "description": "Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.\n\nAn input string is valid if:\nOpen brackets must be closed by the same type of brackets.\n\nOpen brackets must be closed in the correct order.\n\nExample 1:\nInput: s = \"()\"\nOutput: true\n\nExample 2:\nInput: s = \"()[]{}\"\nOutput: true\n\nExample 3:\nInput: s = \"(]\"\nOutput: false\n\nExample 4:\nInput: s = \"([)]\"\nOutput: false\n\nExample 5:\nInput: s = \"{[]}\"\nOutput: true\n\nConstraints:\n`1 <= s.length <= 104`\n`s` consists of parentheses only `'()[]{}'`.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "()",
+          "expected_output": "True"
+        },
+        {
+          "input": "()[]{}",
+          "expected_output": "True"
+        },
+        {
+          "input": "(]",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 206,
+      "title": "Reverse Linked List",
+      "description": "Given the `head` of a singly linked list, reverse the list, and return the reversed list.\n\nExample 1:\nInput: head = [1,2,3,4,5]\nOutput: [5,4,3,2,1]\n\nExample 2:\nInput: head = [1,2]\nOutput: [2,1]\n\nExample 3:\nInput: head = []\nOutput: []\n\nConstraints:\nThe number of nodes in the list is the range `[0, 5000]`.\n\n`-5000 <= Node.val <= 5000`\nFollow up: A linked list can be reversed either iteratively or recursively. Could you implement both?",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "5 1 2 3 4 5",
+          "expected_output": "[5, 4, 3, 2, 1]"
+        },
+        {
+          "input": "2 1 2",
+          "expected_output": "[2, 1]"
+        },
+        {
+          "input": "0 ",
+          "expected_output": "[]"
+        }
+      ]
+    },
+    {
+      "id": 415,
+      "title": "Add Strings",
+      "description": "Given two non-negative integers, `num1` and `num2` represented as string, return the sum of `num1` and `num2` as a string.\n\nExample 1:\nInput: num1 = \"11\", num2 = \"123\"\nOutput: \"134\"\n\nExample 2:\nInput: num1 = \"456\", num2 = \"77\"\nOutput: \"533\"\n\nExample 3:\nInput: num1 = \"0\", num2 = \"0\"\nOutput: \"0\"\n\nConstraints:\n`1 <= num1.length, num2.length <= 104`\n`num1` and `num2` consist of only digits.\n\n`num1` and `num2` don't have any leading zeros except for the zero itself.\n\nFollow up: Could you solve it without using any built-in `BigInteger` library or converting the inputs to integer directly?",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "11\n123",
+          "expected_output": "134"
+        },
+        {
+          "input": "456\n77",
+          "expected_output": "533"
+        },
+        {
+          "input": "0\n0",
+          "expected_output": "0"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Reverse Integer",
+      "description": "Given a signed 32-bit integer `x`, return `x` with its digits reversed. If reversing `x` causes the value to go outside the signed 32-bit integer range `[-231, 231 - 1]`, then return `0`.\n\nAssume the environment does not allow you to store 64-bit integers (signed or unsigned).\n\nExample 1:\nInput: x = 123\nOutput: 321\n\nExample 2:\nInput: x = -123\nOutput: -321\n\nExample 3:\nInput: x = 120\nOutput: 21\n\nExample 4:\nInput: x = 0\nOutput: 0\n\nConstraints:\n`-231 <= x <= 231 - 1`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "123",
+          "expected_output": "321"
+        },
+        {
+          "input": "-123",
+          "expected_output": "-321"
+        },
+        {
+          "input": "120",
+          "expected_output": "21"
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "title": "Maximum Subarray",
+      "description": "Given an integer array `nums`, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.\n\nExample 1:\nInput: nums = [-2,1,-3,4,-1,2,1,-5,4]\nOutput: 6\nExplanation: [4,-1,2,1] has the largest sum = 6.\n\nExample 2:\nInput: nums = [1]\nOutput: 1\n\nExample 3:\nInput: nums = [5,4,-1,7,8]\nOutput: 23\n\nConstraints:\n`1 <= nums.length <= 3 * 104`\n`-105 <= nums[i] <= 105`\nFollow up: If you have figured out the `O(n)` solution, try coding another solution using the divide and conquer approach, which is more subtle.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "9 -2 1 -3 4 -1 2 1 -5 4",
+          "expected_output": "6"
+        },
+        {
+          "input": "1 1",
+          "expected_output": "1"
+        },
+        {
+          "input": "5 5 4 -1 7 8",
+          "expected_output": "23"
+        }
+      ]
+    },
+    {
+      "id": 811,
+      "title": "Subdomain Visit Count",
+      "description": "A website domain like \"discuss.leetcode.com\" consists of various subdomains. At the top level, we have \"com\", at the next level, we have \"leetcode.com\", and at the lowest level, \"discuss.leetcode.com\". When we visit a domain like \"discuss.leetcode.com\", we will also visit the parent domains \"leetcode.com\" and \"com\" implicitly.\n\nNow, call a \"count-paired domain\" to be a count (representing the number of visits this domain received), followed by a space, followed by the address. An example of a count-paired domain might be \"9001 discuss.leetcode.com\".\n\nWe are given a list `cpdomains` of count-paired domains. We would like a list of count-paired domains, (in the same format as the input, and in any order), that explicitly counts the number of visits to each subdomain.\n\nExample 1:\nInput:\n[\"9001 discuss.leetcode.com\"]\nOutput:\n[\"9001 discuss.leetcode.com\", \"9001 leetcode.com\", \"9001 com\"]\nExplanation:\nWe only have one website domain: \"discuss.leetcode.com\". As discussed above, the subdomain \"leetcode.com\" and \"com\" will also be visited. So they will all be visited 9001 times.\n\nExample 2:\nInput:\n[\"900 google.mail.com\", \"50 yahoo.com\", \"1 intel.mail.com\", \"5 wiki.org\"]\nOutput:\n[\"901 mail.com\",\"50 yahoo.com\",\"900 google.mail.com\",\"5 wiki.org\",\"5 org\",\"1 intel.mail.com\",\"951 com\"]\nExplanation:\nWe will visit \"google.mail.com\" 900 times, \"yahoo.com\" 50 times, \"intel.mail.com\" once and \"wiki.org\" 5 times. For the subdomains, we will visit \"mail.com\" 900 + 1 = 901 times, \"com\" 900 + 50 + 1 = 951 times, and \"org\" 5 times.\n\nNotes:\nThe length of `cpdomains` will not exceed `100`.\nThe length of each domain name will not exceed `100`.\n\nEach address will have either 1 or 2 \".\" characters.\n\nThe input count in any count-paired domain will not exceed `10000`.\n\nThe answer output can be returned in any order.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "1\n9001 discuss.leetcode.com",
+          "expected_output": "['9001 discuss.leetcode.com', '9001 leetcode.com', '9001 com']"
+        },
+        {
+          "input": "4\n900 google.mail.com\n50 yahoo.com\n1 intel.mail.com\n5 wiki.org",
+          "expected_output": "['901 mail.com', '50 yahoo.com', '900 google.mail.com', '5 wiki.org', '5 org', '1 intel.mail.com', '951 com']"
+        }
+      ]
+    },
+    {
+      "id": 176,
+      "title": "Second Highest Salary",
+      "description": "SQL Schema",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "1",
+          "expected_output": "null"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "title": "Merge Two Sorted Lists",
+      "description": "Merge two sorted linked lists and return it as a sorted list. The list should be made by splicing together the nodes of the first two lists.\n\nExample 1:\nInput: l1 = [1,2,4], l2 = [1,3,4]\nOutput: [1,1,2,3,4,4]\n\nExample 2:\nInput: l1 = [], l2 = []\nOutput: []\n\nExample 3:\nInput: l1 = [], l2 = [0]\nOutput: [0]\n\nConstraints:\nThe number of nodes in both lists is in the range `[0, 50]`.\n\n`-100 <= Node.val <= 100`\nBoth `l1` and `l2` are sorted in non-decreasing order.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "3 1 2 4",
+          "expected_output": "[1, 1, 2, 3, 4, 4]"
+        },
+        {
+          "input": "0 ",
+          "expected_output": "[]"
+        },
+        {
+          "input": "0 ",
+          "expected_output": "[0]"
+        }
+      ]
+    },
+    {
+      "id": 155,
+      "title": "Min Stack",
+      "description": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.\n\nImplement the `MinStack` class:\n`MinStack()` initializes the stack object.\n\n`void push(val)` pushes the element `val` onto the stack.\n\n`void pop()` removes the element on the top of the stack.\n\n`int top()` gets the top element of the stack.\n\n`int getMin()` retrieves the minimum element in the stack.\n\nExample 1:\nInput\n[\"MinStack\",\"push\",\"push\",\"push\",\"getMin\",\"pop\",\"top\",\"getMin\"]\n[[],[-2],[0],[-3],[],[],[],[]]\nOutput\n[null,null,null,null,-3,null,0,-2]\nExplanation\nMinStack minStack = new MinStack();\nminStack.push(-2);\nminStack.push(0);\nminStack.push(-3);\nminStack.getMin(); // return -3\nminStack.pop();\nminStack.top();    // return 0\nminStack.getMin(); // return -2\n\nConstraints:\n`-231 <= val <= 231 - 1`\nMethods `pop`, `top` and `getMin` operations will always be called on non-empty stacks.\n\nAt most `3 * 104` calls will be made to `push`, `pop`, `top`, and `getMin`.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "push -2\npush 0\npush -3\nget_min\npop\ntop\nget_min",
+          "expected_output": "0"
+        }
+      ]
+    },
+    {
+      "id": 412,
+      "title": "Fizz Buzz",
+      "description": "Write a program that outputs the string representation of numbers from 1 to n.\n\nBut for multiples of three it should output “Fizz” instead of the number and for the multiples of five output “Buzz”. For numbers which are multiples of both three and five output “FizzBuzz”.\n\nExample:\nn = 15,\nReturn:\n[\n    \"1\",\n    \"2\",\n    \"Fizz\",\n    \"4\",\n    \"Buzz\",\n    \"Fizz\",\n    \"7\",\n    \"8\",\n    \"Fizz\",\n    \"Buzz\",\n    \"11\",\n    \"Fizz\",\n    \"13\",\n    \"14\",\n    \"FizzBuzz\"\n]",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "3",
+          "expected_output": "['1', '2', 'Fizz']"
+        },
+        {
+          "input": "5",
+          "expected_output": "['1', '2', 'Fizz', '4', 'Buzz']"
+        },
+        {
+          "input": "15",
+          "expected_output": "['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz']"
+        }
+      ]
+    },
+    {
+      "id": 88,
+      "title": "Merge Sorted Array",
+      "description": "Given two sorted integer arrays `nums1` and `nums2`, merge `nums2` into `nums1` as one sorted array.\n\nThe number of elements initialized in `nums1` and `nums2` are `m` and `n` respectively. You may assume that `nums1` has a size equal to `m + n` such that it has enough space to hold additional elements from `nums2`.\n\nExample 1:\nInput: nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3\nOutput: [1,2,2,3,5,6]\n\nExample 2:\nInput: nums1 = [1], m = 1, nums2 = [], n = 0\nOutput: [1]\n\nConstraints:\n`nums1.length == m + n`\n`nums2.length == n`\n`0 <= m, n <= 200`\n`1 <= m + n <= 200`\n`-109 <= nums1[i], nums2[i] <= 109`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "6 1 2 3 0 0 0 3 3",
+          "expected_output": "[1, 2, 2, 3, 5, 6]"
+        },
+        {
+          "input": "1 1 1 0",
+          "expected_output": "[1]"
+        }
+      ]
+    },
+    {
+      "id": 680,
+      "title": "Valid Palindrome II",
+      "description": "Given a non-empty string `s`, you may delete at most one character.  Judge whether you can make it a palindrome.\n\nExample 1:\nInput: \"aba\"\nOutput: True\n\nExample 2:\nInput: \"abca\"\nOutput: True\nExplanation: You could delete the character 'c'.\n\nNote:\nThe string will only contain lowercase characters a-z.\n\nThe maximum length of the string is 50000.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "aba",
+          "expected_output": "True"
+        },
+        {
+          "input": "abca",
+          "expected_output": "True"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Longest Common Prefix",
+      "description": "Write a function to find the longest common prefix string amongst an array of strings.\n\nIf there is no common prefix, return an empty string `\"\"`.\n\nExample 1:\nInput: strs = [\"flower\",\"flow\",\"flight\"]\nOutput: \"fl\"\n\nExample 2:\nInput: strs = [\"dog\",\"racecar\",\"car\"]\nOutput: \"\"\nExplanation: There is no common prefix among the input strings.\n\nConstraints:\n`0 <= strs.length <= 200`\n`0 <= strs[i].length <= 200`\n`strs[i]` consists of only lower-case English letters.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "3 flower flow flight",
+          "expected_output": "fl"
+        },
+        {
+          "input": "3 dog racecar car",
+          "expected_output": ""
+        }
+      ]
+    },
+    {
+      "id": 125,
+      "title": "Valid Palindrome",
+      "description": "Given a string `s`, determine if it is a palindrome, considering only alphanumeric characters and ignoring cases.\n\nExample 1:\nInput: s = \"A man, a plan, a canal: Panama\"\nOutput: true\nExplanation: \"amanaplanacanalpanama\" is a palindrome.\n\nExample 2:\nInput: s = \"race a car\"\nOutput: false\nExplanation: \"raceacar\" is not a palindrome.\n\nConstraints:\n`1 <= s.length <= 2 * 105`\n`s` consists only of printable ASCII characters.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "A man, a plan, a canal: Panama",
+          "expected_output": "True"
+        },
+        {
+          "input": "race a car",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "title": "Add Binary",
+      "description": "Given two binary strings `a` and `b`, return their sum as a binary string.\n\nExample 1:\nInput: a = \"11\", b = \"1\"\nOutput: \"100\"\n\nExample 2:\nInput: a = \"1010\", b = \"1011\"\nOutput: \"10101\"\n\nConstraints:\n`1 <= a.length, b.length <= 104`\n`a` and `b` consist only of `'0'` or `'1'` characters.\n\nEach string does not contain leading zeros except for the zero itself.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "11\n1",
+          "expected_output": "100"
+        },
+        {
+          "input": "1010\n1011",
+          "expected_output": "10101"
+        }
+      ]
+    },
+    {
+      "id": 937,
+      "title": "Reorder Data in Log Files",
+      "description": "You are given an array of `logs`. Each log is a space-delimited string of words, where the first word is the identifier.\n\nThere are two types of logs:\nLetter-logs: All words (except the identifier) consist of lowercase English letters.\n\nDigit-logs: All words (except the identifier) consist of digits.\n\nReorder these logs so that:\nThe letter-logs come before all digit-logs.\n\nThe letter-logs are sorted lexicographically by their contents. If their contents are the same, then sort them lexicographically by their identifiers.\n\nThe digit-logs maintain their relative ordering.\n\nReturn the final order of the logs.\n\nExample 1:\nInput: logs = [\"dig1 8 1 5 1\",\"let1 art can\",\"dig2 3 6\",\"let2 own kit dig\",\"let3 art zero\"]\nOutput: [\"let1 art can\",\"let3 art zero\",\"let2 own kit dig\",\"dig1 8 1 5 1\",\"dig2 3 6\"]\nExplanation:\nThe letter-log contents are all different, so their ordering is \"art can\", \"art zero\", \"own kit dig\".\n\nThe digit-logs have a relative order of \"dig1 8 1 5 1\", \"dig2 3 6\".\n\nExample 2:\nInput: logs = [\"a1 9 2 3 1\",\"g1 act car\",\"zo4 4 7\",\"ab1 off key dog\",\"a8 act zoo\"]\nOutput: [\"g1 act car\",\"a8 act zoo\",\"ab1 off key dog\",\"a1 9 2 3 1\",\"zo4 4 7\"]\n\nConstraints:\n`1 <= logs.length <= 100`\n`3 <= logs[i].length <= 100`\nAll the tokens of `logs[i]` are separated by a single space.\n\n`logs[i]` is guaranteed to have an identifier and at least one word after the identifier.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "5 dig1 8 1 5 1 let1 art can dig2 3 6 let2 own kit dig let3 art zero",
+          "expected_output": "['let1 art can', 'let3 art zero', 'let2 own kit dig', 'dig1 8 1 5 1', 'dig2 3 6']"
+        },
+        {
+          "input": "5 a1 9 2 3 1 g1 act car zo4 4 7 ab1 off key dog a8 act zoo",
+          "expected_output": "['g1 act car', 'a8 act zoo', 'ab1 off key dog', 'a1 9 2 3 1', 'zo4 4 7']"
+        }
+      ]
+    },
+    {
+      "id": 283,
+      "title": "Move Zeroes",
+      "description": "Given an integer array `nums`, move all `0`'s to the end of it while maintaining the relative order of the non-zero elements.\n\nNote that you must do this in-place without making a copy of the array.\n\nExample 1:\nInput: nums = [0,1,0,3,12]\nOutput: [1,3,12,0,0]\n\nExample 2:\nInput: nums = [0]\nOutput: [0]\n\nConstraints:\n`1 <= nums.length <= 104`\n`-231 <= nums[i] <= 231 - 1`\nFollow up: Could you minimize the total number of operations done?",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "5 0 1 0 3 12",
+          "expected_output": "[1, 3, 12, 0, 0]"
+        },
+        {
+          "input": "1 0",
+          "expected_output": "[0]"
+        }
+      ]
+    },
+    {
+      "id": 453,
+      "title": "Minimum Moves to Equal Array Elements",
+      "description": "Given an integer array `nums` of size `n`, return the minimum number of moves required to make all array elements equal.\n\nIn one move, you can increment `n - 1` elements of the array by `1`.\n\nExample 1:\nInput: nums = [1,2,3]\nOutput: 3\nExplanation: Only three moves are needed (remember each move increments two elements):\n[1,2,3]  =>  [2,3,3]  =>  [3,4,3]  =>  [4,4,4]\n\nExample 2:\nInput: nums = [1,1,1]\nOutput: 0\n\nConstraints:\n`n == nums.length`\n`1 <= nums.length <= 104`\n`-109 <= nums[i] <= 109`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "3 1 2 3",
+          "expected_output": "3"
+        },
+        {
+          "input": "3 1 1 1",
+          "expected_output": "0"
+        }
+      ]
+    },
+    {
+      "id": 387,
+      "title": "First Unique Character in a String",
+      "description": "Given a string `s`, return the first non-repeating character in it and return its index. If it does not exist, return `-1`.\n\nExample 1:\nInput: s = \"leetcode\"\nOutput: 0\n\nExample 2:\nInput: s = \"loveleetcode\"\nOutput: 2\n\nExample 3:\nInput: s = \"aabb\"\nOutput: -1\n\nConstraints:\n`1 <= s.length <= 105`\n`s` consists of only lowercase English letters.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "leetcode",
+          "expected_output": "0"
+        },
+        {
+          "input": "loveleetcode",
+          "expected_output": "2"
+        },
+        {
+          "input": "aabb",
+          "expected_output": "-1"
+        }
+      ]
+    },
+    {
+      "id": 509,
+      "title": "Fibonacci Number",
+      "description": "The Fibonacci numbers, commonly denoted `F(n)` form a sequence, called the Fibonacci sequence, such that each number is the sum of the two preceding ones, starting from `0` and `1`. That is,\nF(0) = 0, F(1) = 1\nF(n) = F(n - 1) + F(n - 2), for n > 1.\n\nGiven `n`, calculate `F(n)`.\n\nExample 1:\nInput: n = 2\nOutput: 1\nExplanation: F(2) = F(1) + F(0) = 1 + 0 = 1.\n\nExample 2:\nInput: n = 3\nOutput: 2\nExplanation: F(3) = F(2) + F(1) = 1 + 1 = 2.\n\nExample 3:\nInput: n = 4\nOutput: 3\nExplanation: F(4) = F(3) + F(2) = 2 + 1 = 3.\n\nConstraints:\n`0 <= n <= 30`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "2",
+          "expected_output": "1"
+        },
+        {
+          "input": "3",
+          "expected_output": "2"
+        },
+        {
+          "input": "4",
+          "expected_output": "3"
+        }
+      ]
+    },
+    {
+      "id": 706,
+      "title": "Design HashMap",
+      "description": "Design a HashMap without using any built-in hash table libraries.\n\nImplement the `MyHashMap` class:\n`MyHashMap()` initializes the object with an empty map.\n\n`void put(int key, int value)` inserts a `(key, value)` pair into the HashMap. If the `key` already exists in the map, update the corresponding `value`.\n\n`int get(int key)` returns the `value` to which the specified `key` is mapped, or `-1` if this map contains no mapping for the `key`.\n\n`void remove(key)` removes the `key` and its corresponding `value` if the map contains the mapping for the `key`.\n\nExample 1:\nInput\n[\"MyHashMap\", \"put\", \"put\", \"get\", \"get\", \"put\", \"get\", \"remove\", \"get\"]\n[[], [1, 1], [2, 2], [1], [3], [2, 1], [2], [2], [2]]\nOutput\n[null, null, null, 1, -1, null, 1, null, -1]\nExplanation\nMyHashMap myHashMap = new MyHashMap();\nmyHashMap.put(1, 1); // The map is now [[1,1]]\nmyHashMap.put(2, 2); // The map is now [[1,1], [2,2]]\nmyHashMap.get(1);    // return 1, The map is now [[1,1], [2,2]]\nmyHashMap.get(3);    // return -1 (i.e., not found), The map is now [[1,1], [2,2]]\nmyHashMap.put(2, 1); // The map is now [[1,1], [2,1]] (i.e., update the existing value)\nmyHashMap.get(2);    // return 1, The map is now [[1,1], [2,1]]\nmyHashMap.remove(2); // remove the mapping for 2, The map is now [[1,1]]\nmyHashMap.get(2);    // return -1 (i.e., not found), The map is now [[1,1]]\n\nConstraints:\n`0 <= key, value <= 106`\nAt most `104` calls will be made to `put`, `get`, and `remove`.\n\nFollow up: Please do not use the built-in HashMap library.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "put 1 1\nget 1",
+          "expected_output": "1"
+        },
+        {
+          "input": "put 2 2\nget 2\nremove 2\nget 2",
+          "expected_output": "-1"
+        }
+      ]
+    },
+    {
+      "id": 203,
+      "title": "Remove Linked List Elements",
+      "description": "Given the `head` of a linked list and an integer `val`, remove all the nodes of the linked list that has `Node.val == val`, and return the new head.\n\nExample 1:\nInput: head = [1,2,6,3,4,5,6], val = 6\nOutput: [1,2,3,4,5]\n\nExample 2:\nInput: head = [], val = 1\nOutput: []\n\nExample 3:\nInput: head = [7,7,7,7], val = 7\nOutput: []\n\nConstraints:\nThe number of nodes in the list is in the range `[0, 104]`.\n\n`1 <= Node.val <= 50`\n`0 <= k <= 50`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "7 1 2 6 3 4 5 6",
+          "expected_output": "[1, 2, 3, 4, 5]"
+        },
+        {
+          "input": "0 ",
+          "expected_output": "[]"
+        },
+        {
+          "input": "4 7 7 7 7",
+          "expected_output": "[]"
+        }
+      ]
+    },
+    {
+      "id": 175,
+      "title": "Combine Two Tables",
+      "description": "SQL Schema",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "1",
+          "expected_output": "1"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Roman to Integer",
+      "description": "Roman numerals are represented by seven different symbols: `I`, `V`, `X`, `L`, `C`, `D` and `M`.\n\nSymbol       Value\nI             1\nV             5\nX             10\nL             50\nC             100\nD             500\nM             1000\nFor example, `2` is written as `II` in Roman numeral, just two one's added together. `12` is written as `XII`, which is simply `X + II`. The number `27` is written as `XXVII`, which is `XX + V + II`.\n\nRoman numerals are usually written largest to smallest from left to right. However, the numeral for four is not `IIII`. Instead, the number four is written as `IV`. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as `IX`. There are six instances where subtraction is used:\n`I` can be placed before `V` (5) and `X` (10) to make 4 and 9.\n`X` can be placed before `L` (50) and `C` (100) to make 40 and 90.\n`C` can be placed before `D` (500) and `M` (1000) to make 400 and 900.\n\nGiven a roman numeral, convert it to an integer.\n\nExample 1:\nInput: s = \"III\"\nOutput: 3\n\nExample 2:\nInput: s = \"IV\"\nOutput: 4\n\nExample 3:\nInput: s = \"IX\"\nOutput: 9\n\nExample 4:\nInput: s = \"LVIII\"\nOutput: 58\nExplanation: L = 50, V= 5, III = 3.\n\nExample 5:\nInput: s = \"MCMXCIV\"\nOutput: 1994\nExplanation: M = 1000, CM = 900, XC = 90 and IV = 4.\n\nConstraints:\n`1 <= s.length <= 15`\n`s` contains only the characters `('I', 'V', 'X', 'L', 'C', 'D', 'M')`.\n\nIt is guaranteed that `s` is a valid roman numeral in the range `[1, 3999]`.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "III",
+          "expected_output": "3"
+        },
+        {
+          "input": "IV",
+          "expected_output": "4"
+        },
+        {
+          "input": "IX",
+          "expected_output": "9"
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "title": "Climbing Stairs",
+      "description": "You are climbing a staircase. It takes `n` steps to reach the top.\n\nEach time you can either climb `1` or `2` steps. In how many distinct ways can you climb to the top?\n\nExample 1:\nInput: n = 2\nOutput: 2\nExplanation: There are two ways to climb to the top.\n\n1. 1 step + 1 step\n2. 2 steps\n\nExample 2:\nInput: n = 3\nOutput: 3\nExplanation: There are three ways to climb to the top.\n\n1. 1 step + 1 step + 1 step\n2. 1 step + 2 steps\n3. 2 steps + 1 step\n\nConstraints:\n`1 <= n <= 45`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "2",
+          "expected_output": "2"
+        },
+        {
+          "input": "3",
+          "expected_output": "3"
+        }
+      ]
+    },
+    {
+      "id": 543,
+      "title": "Diameter of Binary Tree",
+      "description": "Given the `root` of a binary tree, return the length of the diameter of the tree.\n\nThe diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the `root`.\n\nThe length of a path between two nodes is represented by the number of edges between them.\n\nExample 1:\nInput: root = [1,2,3,4,5]\nOutput: 3\nExplanation: 3is the length of the path [4,2,1,3] or [5,2,1,3].\n\nExample 2:\nInput: root = [1,2]\nOutput: 1\n\nConstraints:\nThe number of nodes in the tree is in the range `[1, 104]`.\n\n`-100 <= Node.val <= 100`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "5 1 2 3 4 5",
+          "expected_output": "3"
+        },
+        {
+          "input": "2 1 2",
+          "expected_output": "1"
+        }
+      ]
+    },
+    {
+      "id": 226,
+      "title": "Invert Binary Tree",
+      "description": "Given the `root` of a binary tree, invert the tree, and return its root.\n\nExample 1:\nInput: root = [4,2,7,1,3,6,9]\nOutput: [4,7,2,9,6,3,1]\n\nExample 2:\nInput: root = [2,1,3]\nOutput: [2,3,1]\n\nExample 3:\nInput: root = []\nOutput: []\n\nConstraints:\nThe number of nodes in the tree is in the range `[0, 100]`.\n\n`-100 <= Node.val <= 100`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "7 4 2 7 1 3 6 9",
+          "expected_output": "[4, 7, 2, 9, 6, 3, 1]"
+        },
+        {
+          "input": "3 2 1 3",
+          "expected_output": "[2, 3, 1]"
+        },
+        {
+          "input": "0 ",
+          "expected_output": "[]"
+        }
+      ]
+    },
+    {
+      "id": 242,
+      "title": "Valid Anagram",
+      "description": "Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.\n\nExample 1:\nInput: s = \"anagram\", t = \"nagaram\"\nOutput: true\n\nExample 2:\nInput: s = \"rat\", t = \"car\"\nOutput: false\n\nConstraints:\n`1 <= s.length, t.length <= 5 * 104`\n`s` and `t` consist of lowercase English letters.\n\nFollow up: What if the inputs contain Unicode characters? How would you adapt your solution to such a case?",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "anagram\nnagaram",
+          "expected_output": "True"
+        },
+        {
+          "input": "rat\ncar",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Palindrome Number",
+      "description": "Given an integer `x`, return `true` if `x` is palindrome integer.\n\nAn integer is a palindrome when it reads the same backward as forward. For example, `121` is palindrome while `123` is not.\n\nExample 1:\nInput: x = 121\nOutput: true\n\nExample 2:\nInput: x = -121\nOutput: false\nExplanation: From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome.\n\nExample 3:\nInput: x = 10\nOutput: false\nExplanation: Reads 01 from right to left. Therefore it is not a palindrome.\n\nExample 4:\nInput: x = -101\nOutput: false\n\nConstraints:\n`-231 <= x <= 231 - 1`\nFollow up: Could you solve it without converting the integer to a string?",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "121",
+          "expected_output": "True"
+        },
+        {
+          "input": "-121",
+          "expected_output": "False"
+        },
+        {
+          "input": "10",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 344,
+      "title": "Reverse String",
+      "description": "Write a function that reverses a string. The input string is given as an array of characters `s`.\n\nExample 1:\nInput: s = [\"h\",\"e\",\"l\",\"l\",\"o\"]\nOutput: [\"o\",\"l\",\"l\",\"e\",\"h\"]\n\nExample 2:\nInput: s = [\"H\",\"a\",\"n\",\"n\",\"a\",\"h\"]\nOutput: [\"h\",\"a\",\"n\",\"n\",\"a\",\"H\"]\n\nConstraints:\n`1 <= s.length <= 105`\n`s[i]` is a printable ascii character.\n\nFollow up: Do not allocate extra space for another array. You must do this by modifying the input array in-place with `O(1)` extra memory.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "[\"h\",\"e\",\"l\",\"l\",\"o\"]",
+          "expected_output": "['o', 'l', 'l', 'e', 'h']"
+        },
+        {
+          "input": "[\"H\",\"a\",\"n\",\"n\",\"a\",\"h\"]",
+          "expected_output": "['h', 'a', 'n', 'n', 'a', 'H']"
+        }
+      ]
+    },
+    {
+      "id": 572,
+      "title": "Subtree of Another Tree",
+      "description": "Given two non-empty binary trees s and t, check whether tree t has exactly the same structure and node values with a subtree of s. A subtree of s is a tree consists of a node in s and all of this node's descendants. The tree s could also be considered as a subtree of itself.\n\nExample 1:\nGiven tree s:\n     3\n    / \\\n   4   5\n  / \\\n 1   2\nGiven tree t:\n   4\n  / \\\n 1   2\nReturn true, because t has the same structure and node values with a subtree of s.\n\nExample 2:\nGiven tree s:\n     3\n    / \\\n   4   5\n  / \\\n 1   2\n    /\n   0\nGiven tree t:\n   4\n  / \\\n 1   2\nReturn false.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "3 4 5 1 2 4 1 2",
+          "expected_output": "True"
+        },
+        {
+          "input": "3 4 5 1 2 0 4 1 2",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 696,
+      "title": "Count Binary Substrings",
+      "description": "Give a string `s`, count the number of non-empty (contiguous) substrings that have the same number of 0's and 1's, and all the 0's and all the 1's in these substrings are grouped consecutively.\nSubstrings that occur multiple times are counted the number of times they occur.\n\nExample 1:\nInput: \"00110011\"\nOutput: 6\nExplanation: There are 6 substrings that have equal number of consecutive 1's and 0's: \"0011\", \"01\", \"1100\", \"10\", \"0011\", and \"01\".\n\nNotice that some of these substrings repeat and are counted the number of times they occur.\n\nAlso, \"00110011\" is not a valid substring because all the 0's (and 1's) are not grouped together.\n\nExample 2:\nInput: \"10101\"\nOutput: 4\nExplanation: There are 4 substrings: \"10\", \"01\", \"10\", \"01\" that have equal number of consecutive 1's and 0's.\n\nNote:\n`s.length` will be between 1 and 50,000.\n\n`s` will only consist of \"0\" or \"1\" characters.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "00110011",
+          "expected_output": "6"
+        },
+        {
+          "input": "10101",
+          "expected_output": "4"
+        }
+      ]
+    },
+    {
+      "id": 716,
+      "title": "Max Stack",
+      "description": "Design a max stack data structure that supports the stack operations and supports finding the stack's maximum element.\n\nImplement the `MaxStack` class:\n`MaxStack()` Initializes the stack object.\n\n`void push(int x)` Pushes element `x` onto the stack.\n\n`int pop()` Removes the element on top of the stack and returns it.\n\n`int top()` Gets the element on the top of the stack without removing it.\n\n`int peekMax()` Retrieves the maximum element in the stack without removing it.\n\n`int popMax()` Retrieves the maximum element in the stack and removes it. If there is more than one maximum element, only remove the top-most one.\n\nExample 1:\nInput\n[\"MaxStack\", \"push\", \"push\", \"push\", \"top\", \"popMax\", \"top\", \"peekMax\", \"pop\", \"top\"]\n[[], [5], [1], [5], [], [], [], [], [], []]\nOutput\n[null, null, null, null, 5, 5, 1, 5, 1, 5]\nExplanation\nMaxStack stk = new MaxStack();\nstk.push(5);   // [5] the top of the stack and the maximum number is 5.\n\nstk.push(1);   // [5, 1] the top of the stack is 1, but the maximum is 5.\n\nstk.push(5);   // [5, 1, 5] the top of the stack is 5, which is also the maximum, because it is the top most one.\n\nstk.top();     // return 5, [5, 1, 5] the stack did not change.\n\nstk.popMax();  // return 5, [5, 1] the stack is changed now, and the top is different from the max.\n\nstk.top();     // return 1, [5, 1] the stack did not change.\n\nstk.peekMax(); // return 5, [5, 1] the stack did not change.\n\nstk.pop();     // return 1, [5] the top of the stack and the max element is now 5.\n\nstk.top();     // return 5, [5] the stack did not change.\n\nConstraints:\n`-107 <= x <= 107`\nAt most `104` calls will be made to `push`, `pop`, `top`, `peekMax`, and `popMax`.\n\nThere will be at least one element in the stack when `pop`, `top`, `peekMax`, or `popMax` is called.\n\nFollow up: Could you come up with a solution that supports `O(1)` for each `top` call and `O(logn)` for each other call?",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "push 5\npush 2\npush 3\nmax\npop\nmax",
+          "expected_output": "3"
+        }
+      ]
+    },
+    {
+      "id": 101,
+      "title": "Symmetric Tree",
+      "description": "Given the `root` of a binary tree, check whether it is a mirror of itself (i.e., symmetric around its center).\n\nExample 1:\nInput: root = [1,2,2,3,4,4,3]\nOutput: true\n\nExample 2:\nInput: root = [1,2,2,null,3,null,3]\nOutput: false\n\nConstraints:\nThe number of nodes in the tree is in the range `[1, 1000]`.\n\n`-100 <= Node.val <= 100`\nFollow up: Could you solve it both recursively and iteratively?",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "7 1 2 2 3 4 4 3",
+          "expected_output": "True"
+        },
+        {
+          "input": "7 1 2 2 -1 3 -1 3",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 234,
+      "title": "Palindrome Linked List",
+      "description": "Given the `head` of a singly linked list, return `true` if it is a palindrome.\n\nExample 1:\nInput: head = [1,2,2,1]\nOutput: true\n\nExample 2:\nInput: head = [1,2]\nOutput: false\n\nConstraints:\nThe number of nodes in the list is in the range `[1, 105]`.\n\n`0 <= Node.val <= 9`\nFollow up: Could you do it in `O(n)` time and `O(1)` space?",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "4 1 2 2 1",
+          "expected_output": "True"
+        },
+        {
+          "input": "2 1 2",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 202,
+      "title": "Happy Number",
+      "description": "Write an algorithm to determine if a number `n` is happy.\n\nA happy number is a number defined by the following process:\nStarting with any positive integer, replace the number by the sum of the squares of its digits.\n\nRepeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1.\n\nThose numbers for which this process ends in 1 are happy.\n\nReturn `true` if `n` is a happy number, and `false` if not.\n\nExample 1:\nInput: n = 19\nOutput: true\nExplanation:\n12 + 92 = 82\n82 + 22 = 68\n62 + 82 = 100\n12 + 02 + 02 = 1\n\nExample 2:\nInput: n = 2\nOutput: false\n\nConstraints:\n`1 <= n <= 231 - 1`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "19",
+          "expected_output": "True"
+        },
+        {
+          "input": "2",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 1480,
+      "title": "Running Sum of 1d Array",
+      "description": "Given an array `nums`. We define a running sum of an array as `runningSum[i] = sum(nums[0]...nums[i])`.\n\nReturn the running sum of `nums`.\n\nExample 1:\nInput: nums = [1,2,3,4]\nOutput: [1,3,6,10]\nExplanation: Running sum is obtained as follows: [1, 1+2, 1+2+3, 1+2+3+4].\n\nExample 2:\nInput: nums = [1,1,1,1,1]\nOutput: [1,2,3,4,5]\nExplanation: Running sum is obtained as follows: [1, 1+1, 1+1+1, 1+1+1+1, 1+1+1+1+1].\n\nExample 3:\nInput: nums = [3,1,2,10,1]\nOutput: [3,4,6,16,17]\n\nConstraints:\n`1 <= nums.length <= 1000`\n`-10^6 <= nums[i] <= 10^6`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "4 1 2 3 4",
+          "expected_output": "[1, 3, 6, 10]"
+        },
+        {
+          "input": "5 1 1 1 1 1",
+          "expected_output": "[1, 2, 3, 4, 5]"
+        },
+        {
+          "input": "5 3 1 2 10 1",
+          "expected_output": "[3, 4, 6, 16, 17]"
+        }
+      ]
+    },
+    {
+      "id": 169,
+      "title": "Majority Element",
+      "description": "Given an array `nums` of size `n`, return the majority element.\n\nThe majority element is the element that appears more than `⌊n / 2⌋` times. You may assume that the majority element always exists in the array.\n\nExample 1:\nInput: nums = [3,2,3]\nOutput: 3\n\nExample 2:\nInput: nums = [2,2,1,1,1,2,2]\nOutput: 2\n\nConstraints:\n`n == nums.length`\n`1 <= n <= 5 * 104`\n`-231 <= nums[i] <= 231 - 1`\nFollow-up: Could you solve the problem in linear time and in `O(1)` space?",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "3 3 2 3",
+          "expected_output": "3"
+        },
+        {
+          "input": "7 2 2 1 1 1 2 2",
+          "expected_output": "2"
+        }
+      ]
+    },
+    {
+      "id": 359,
+      "title": "Logger Rate Limiter",
+      "description": "Design a logger system that receives a stream of messages along with their timestamps. Each unique message should only be printed at most every 10 seconds (i.e. a message printed at timestamp `t` will prevent other identical messages from being printed until timestamp `t + 10`).\n\nAll messages will come in chronological order. Several messages may arrive at the same timestamp.\n\nImplement the `Logger` class:\n`Logger()` Initializes the `logger` object.\n\n`bool shouldPrintMessage(int timestamp, string message)` Returns `true` if the `message` should be printed in the given `timestamp`, otherwise returns `false`.\n\nExample 1:\nInput\n[\"Logger\", \"shouldPrintMessage\", \"shouldPrintMessage\", \"shouldPrintMessage\", \"shouldPrintMessage\", \"shouldPrintMessage\", \"shouldPrintMessage\"]\n[[], [1, \"foo\"], [2, \"bar\"], [3, \"foo\"], [8, \"bar\"], [10, \"foo\"], [11, \"foo\"]]\nOutput\n[null, true, true, false, false, false, true]\nExplanation\nLogger logger = new Logger();\nlogger.shouldPrintMessage(1, \"foo\");  // return true, next allowed timestamp for \"foo\" is 1 + 10 = 11\nlogger.shouldPrintMessage(2, \"bar\");  // return true, next allowed timestamp for \"bar\" is 2 + 10 = 12\nlogger.shouldPrintMessage(3, \"foo\");  // 3 = 11, return true, next allowed timestamp for \"foo\" is\n                                      // 11 + 10 = 21\n\nConstraints:\n`0 <= timestamp <= 109`\nEvery `timestamp` will be passed in non-decreasing order (chronological order).\n\n`1 <= message.length <= 30`\nAt most `104` calls will be made to `shouldPrintMessage`.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "print 1\ngreen 1\nprint 2",
+          "expected_output": "True\nFalse"
+        }
+      ]
+    },
+    {
+      "id": 1025,
+      "title": "Divisor Game",
+      "description": "Alice and Bob take turns playing a game, with Alice starting first.\n\nInitially, there is a number `n` on the chalkboard. On each player's turn, that player makes a move consisting of:\nChoosing any `x` with `0 < x < n` and `n % x == 0`.\n\nReplacing the number `n` on the chalkboard with `n - x`.\n\nAlso, if a player cannot make a move, they lose the game.\n\nReturn `true` if and only if Alice wins the game, assuming both players play optimally.\n\nExample 1:\nInput: n = 2\nOutput: true\nExplanation: Alice chooses 1, and Bob has no more moves.\n\nExample 2:\nInput: n = 3\nOutput: false\nExplanation: Alice chooses 1, Bob chooses 1, and Alice has no more moves.\n\nConstraints:\n`1 <= n <= 1000`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "2",
+          "expected_output": "True"
+        },
+        {
+          "input": "3",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 938,
+      "title": "Range Sum of BST",
+      "description": "Given the `root` node of a binary search tree, return the sum of values of all nodes with a value in the range `[low, high]`.\n\nExample 1:\nInput: root = [10,5,15,3,7,null,18], low = 7, high = 15\nOutput: 32\n\nExample 2:\nInput: root = [10,5,15,3,7,13,18,1,null,6], low = 6, high = 10\nOutput: 23\n\nConstraints:\nThe number of nodes in the tree is in the range `[1, 2 * 104]`.\n\n`1 <= Node.val <= 105`\n`1 <= low <= high <= 105`\nAll `Node.val` are unique.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "7 10 5 15 3 7 -1 18 7 15",
+          "expected_output": "32"
+        },
+        {
+          "input": "10 10 5 15 3 7 13 18 1 -1 6 6 10",
+          "expected_output": "23"
+        }
+      ]
+    },
+    {
+      "id": 122,
+      "title": "Best Time to Buy and Sell Stock II",
+      "description": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `ith` day.\n\nFind the maximum profit you can achieve. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times).\n\nNote: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).\n\nExample 1:\nInput: prices = [7,1,5,3,6,4]\nOutput: 7\nExplanation: Buy on day 2 (price = 1) and sell on day 3 (price = 5), profit = 5-1 = 4.\n\nThen buy on day 4 (price = 3) and sell on day 5 (price = 6), profit = 6-3 = 3.\n\nExample 2:\nInput: prices = [1,2,3,4,5]\nOutput: 4\nExplanation: Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.\n\nNote that you cannot buy on day 1, buy on day 2 and sell them later, as you are engaging multiple transactions at the same time. You must sell before buying again.\n\nExample 3:\nInput: prices = [7,6,4,3,1]\nOutput: 0\nExplanation: In this case, no transaction is done, i.e., max profit = 0.\n\nConstraints:\n`1 <= prices.length <= 3 * 104`\n`0 <= prices[i] <= 104`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "6 7 1 5 3 6 4",
+          "expected_output": "7"
+        },
+        {
+          "input": "5 1 2 3 4 5",
+          "expected_output": "4"
+        },
+        {
+          "input": "5 7 6 4 3 1",
+          "expected_output": "0"
+        }
+      ]
+    },
+    {
+      "id": 118,
+      "title": "Pascal's Triangle",
+      "description": "Given an integer `numRows`, return the first numRows of Pascal's triangle.\n\nIn Pascal's triangle, each number is the sum of the two numbers directly above it as shown:\n\nExample 1:\nInput: numRows = 5\nOutput: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]\n\nExample 2:\nInput: numRows = 1\nOutput: [[1]]\n\nConstraints:\n`1 <= numRows <= 30`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "5",
+          "expected_output": "[[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]"
+        },
+        {
+          "input": "1",
+          "expected_output": "[[1]]"
+        }
+      ]
+    },
+    {
+      "id": 346,
+      "title": "Moving Average from Data Stream",
+      "description": "Given a stream of integers and a window size, calculate the moving average of all integers in the sliding window.\n\nImplement the `MovingAverage` class:\n`MovingAverage(int size)` Initializes the object with the size of the window `size`.\n\n`double next(int val)` Returns the moving average of the last `size` values of the stream.\n\nExample 1:\nInput\n[\"MovingAverage\", \"next\", \"next\", \"next\", \"next\"]\n[[3], [1], [10], [3], [5]]\nOutput\n[null, 1.0, 5.5, 4.66667, 6.0]\nExplanation\nMovingAverage movingAverage = new MovingAverage(3);\nmovingAverage.next(1); // return 1.0 = 1 / 1\nmovingAverage.next(10); // return 5.5 = (1 + 10) / 2\nmovingAverage.next(3); // return 4.66667 = (1 + 10 + 3) / 3\nmovingAverage.next(5); // return 6.0 = (10 + 3 + 5) / 3\n\nConstraints:\n`1 <= size <= 1000`\n`-105 <= val <= 105`\nAt most `104` calls will be made to `next`.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "3 1 10 3 5",
+          "expected_output": "1.0"
+        }
+      ]
+    },
+    {
+      "id": 733,
+      "title": "Flood Fill",
+      "description": "An `image` is represented by a 2-D array of integers, each integer representing the pixel value of the image (from 0 to 65535).\n\nGiven a coordinate `(sr, sc)` representing the starting pixel (row and column) of the flood fill, and a pixel value `newColor`, \"flood fill\" the image.\n\nTo perform a \"flood fill\", consider the starting pixel, plus any pixels connected 4-directionally to the starting pixel of the same color as the starting pixel, plus any pixels connected 4-directionally to those pixels (also with the same color as the starting pixel), and so on.  Replace the color of all of the aforementioned pixels with the newColor.\n\nAt the end, return the modified image.\n\nExample 1:\nInput:\nimage = [[1,1,1],[1,1,0],[1,0,1]]\nsr = 1, sc = 1, newColor = 2\nOutput: [[2,2,2],[2,2,0],[2,0,1]]\nExplanation:\nFrom the center of the image (with position (sr, sc) = (1, 1)), all pixels connected\nby a path of the same color as the starting pixel are colored with the new color.\n\nNote the bottom corner is not colored 2, because it is not 4-directionally connected\nto the starting pixel.\n\nNote:\nThe length of `image` and `image[0]` will be in the range `[1, 50]`.\n\nThe given starting pixel will satisfy `0 <= sr < image.length` and `0 <= sc < image[0].length`.\n\nThe value of each color in `image[i][j]` and `newColor` will be an integer in `[0, 65535]`.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "3 3 1 1 1 1 1 0 1 0 1 1 1 2",
+          "expected_output": "[[2, 2, 2], [2, 2, 0], [2, 0, 1]]"
+        }
+      ]
+    },
+    {
+      "id": 1047,
+      "title": "Remove All Adjacent Duplicates In String",
+      "description": "Given a string `S` of lowercase letters, a duplicate removal consists of choosing two adjacent and equal letters, and removing them.\n\nWe repeatedly make duplicate removals on S until we no longer can.\n\nReturn the final string after all such duplicate removals have been made.  It is guaranteed the answer is unique.\n\nExample 1:\nInput: \"abbaca\"\nOutput: \"ca\"\nExplanation:\nFor example, in \"abbaca\" we could remove \"bb\" since the letters are adjacent and equal, and this is the only possible move.  The result of this move is that the string is \"aaca\", of which only \"aa\" is possible, so the final string is \"ca\".\n\nNote:\n`1 <= S.length <= 20000`\n`S` consists only of English lowercase letters.",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "abbaca",
+          "expected_output": "ca"
+        }
+      ]
+    },
+    {
+      "id": 278,
+      "title": "First Bad Version",
+      "description": "You are a product manager and currently leading a team to develop a new product. Unfortunately, the latest version of your product fails the quality check. Since each version is developed based on the previous version, all the versions after a bad version are also bad.\n\nSuppose you have `n` versions `[1, 2, ..., n]` and you want to find out the first bad one, which causes all the following ones to be bad.\n\nYou are given an API `bool isBadVersion(version)` which returns whether `version` is bad. Implement a function to find the first bad version. You should minimize the number of calls to the API.\n\nExample 1:\nInput: n = 5, bad = 4\nOutput: 4\nExplanation:\ncall isBadVersion(3) -> false\ncall isBadVersion(5) -> true\ncall isBadVersion(4) -> true\nThen 4 is the first bad version.\n\nExample 2:\nInput: n = 1, bad = 1\nOutput: 1\n\nConstraints:\n`1 <= bad <= n <= 231 - 1`",
+      "difficulty": "Easy",
+      "test_cases": [
+        {
+          "input": "5 4",
+          "expected_output": "4"
+        },
+        {
+          "input": "1 1",
+          "expected_output": "1"
+        }
+      ]
+    },
+    {
+      "id": 146,
+      "title": "LRU Cache",
+      "description": "Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.\n\nImplement the `LRUCache` class:\n`LRUCache(int capacity)` Initialize the LRU cache with positive size `capacity`.\n\n`int get(int key)` Return the value of the `key` if the key exists, otherwise return `-1`.\n\n`void put(int key, int value)` Update the value of the `key` if the `key` exists. Otherwise, add the `key-value` pair to the cache. If the number of keys exceeds the `capacity` from this operation, evict the least recently used key.\n\nFollow up:\nCould you do `get` and `put` in `O(1)` time complexity?\n\nExample 1:\nInput\n[\"LRUCache\", \"put\", \"put\", \"get\", \"put\", \"get\", \"put\", \"get\", \"get\", \"get\"]\n[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]\nOutput\n[null, null, null, 1, null, -1, null, -1, 3, 4]\nExplanation\nLRUCache lRUCache = new LRUCache(2);\nlRUCache.put(1, 1); // cache is {1=1}\nlRUCache.put(2, 2); // cache is {1=1, 2=2}\nlRUCache.get(1);    // return 1\nlRUCache.put(3, 3); // LRU key was 2, evicts key 2, cache is {1=1, 3=3}\nlRUCache.get(2);    // returns -1 (not found)\nlRUCache.put(4, 4); // LRU key was 1, evicts key 1, cache is {4=4, 3=3}\nlRUCache.get(1);    // return -1 (not found)\nlRUCache.get(3);    // return 3\nlRUCache.get(4);    // return 4\n\nConstraints:\n`1 <= capacity <= 3000`\n`0 <= key <= 3000`\n`0 <= value <= 104`\nAt most `3 * 104` calls will be made to `get` and `put`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "2 1 1 2 2 1 3 3 2 4 4 1 3 4",
+          "expected_output": "1"
+        }
+      ]
+    },
+    {
+      "id": 1041,
+      "title": "Robot Bounded In Circle",
+      "description": "On an infinite plane, a robot initially stands at `(0, 0)` and faces north. The robot can receive one of three instructions:\n`\"G\"`: go straight 1 unit;\n`\"L\"`: turn 90 degrees to the left;\n`\"R\"`: turn 90 degrees to the right.\n\nThe robot performs the `instructions` given in order, and repeats them forever.\n\nReturn `true` if and only if there exists a circle in the plane such that the robot never leaves the circle.\n\nExample 1:\nInput: instructions = \"GGLLGG\"\nOutput: true\nExplanation: The robot moves from (0,0) to (0,2), turns 180 degrees, and then returns to (0,0).\n\nWhen repeating these instructions, the robot remains in the circle of radius 2 centered at the origin.\n\nExample 2:\nInput: instructions = \"GG\"\nOutput: false\nExplanation: The robot moves north indefinitely.\n\nExample 3:\nInput: instructions = \"GL\"\nOutput: true\nExplanation: The robot moves from (0, 0) -> (0, 1) -> (-1, 1) -> (-1, 0) -> (0, 0) -> ...\n\nConstraints:\n`1 <= instructions.length <= 100`\n`instructions[i]` is `'G'`, `'L'` or, `'R'`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "GGLLGG",
+          "expected_output": "True"
+        },
+        {
+          "input": "GG",
+          "expected_output": "False"
+        },
+        {
+          "input": "GL",
+          "expected_output": "True"
+        }
+      ]
+    },
+    {
+      "id": 200,
+      "title": "Number of Islands",
+      "description": "Given an `m x n` 2D binary grid `grid` which represents a map of `'1'`s (land) and `'0'`s (water), return the number of islands.\n\nAn island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.\n\nExample 1:\nInput: grid = [\n  [\"1\",\"1\",\"1\",\"1\",\"0\"],\n  [\"1\",\"1\",\"0\",\"1\",\"0\"],\n  [\"1\",\"1\",\"0\",\"0\",\"0\"],\n  [\"0\",\"0\",\"0\",\"0\",\"0\"]\n]\nOutput: 1\n\nExample 2:\nInput: grid = [\n  [\"1\",\"1\",\"0\",\"0\",\"0\"],\n  [\"1\",\"1\",\"0\",\"0\",\"0\"],\n  [\"0\",\"0\",\"1\",\"0\",\"0\"],\n  [\"0\",\"0\",\"0\",\"1\",\"1\"]\n]\nOutput: 3\n\nConstraints:\n`m == grid.length`\n`n == grid[i].length`\n`1 <= m, n <= 300`\n`grid[i][j]` is `'0'` or `'1'`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "4 5 1 1 1 1 0 1 1 0 1 0 1 1 0 0 0 0 0 0 0 0",
+          "expected_output": "1"
+        },
+        {
+          "input": "4 5 1 1 0 0 0 1 1 0 0 0 0 0 1 0 0 0 0 0 1 1",
+          "expected_output": "3"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "title": "Merge Intervals",
+      "description": "Given an array of `intervals` where `intervals[i] = [starti, endi]`, merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.\n\nExample 1:\nInput: intervals = [[1,3],[2,6],[8,10],[15,18]]\nOutput: [[1,6],[8,10],[15,18]]\nExplanation: Since intervals [1,3] and [2,6] overlaps, merge them into [1,6].\n\nExample 2:\nInput: intervals = [[1,4],[4,5]]\nOutput: [[1,5]]\nExplanation: Intervals [1,4] and [4,5] are considered overlapping.\n\nConstraints:\n`1 <= intervals.length <= 104`\n`intervals[i].length == 2`\n`0 <= starti <= endi <= 104`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "4 1 3 2 6 8 10 15 18",
+          "expected_output": "[[1, 6], [8, 10], [15, 18]]"
+        },
+        {
+          "input": "2 1 4 4 5",
+          "expected_output": "[[1, 5]]"
+        }
+      ]
+    },
+    {
+      "id": 91,
+      "title": "Decode Ways",
+      "description": "A message containing letters from `A-Z` can be encoded into numbers using the following mapping:\n'A' -> \"1\"\n'B' -> \"2\"\n...\n\n'Z' -> \"26\"\nTo decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, `\"11106\"` can be mapped into:\n`\"AAJF\"` with the grouping `(1 1 10 6)`\n`\"KJF\"` with the grouping `(11 10 6)`\nNote that the grouping `(1 11 06)` is invalid because `\"06\"` cannot be mapped into `'F'` since `\"6\"` is different from `\"06\"`.\n\nGiven a string `s` containing only digits, return the number of ways to decode it.\n\nThe answer is guaranteed to fit in a 32-bit integer.\n\nExample 1:\nInput: s = \"12\"\nOutput: 2\nExplanation: \"12\" could be decoded as \"AB\" (1 2) or \"L\" (12).\n\nExample 2:\nInput: s = \"226\"\nOutput: 3\nExplanation: \"226\" could be decoded as \"BZ\" (2 26), \"VF\" (22 6), or \"BBF\" (2 2 6).\n\nExample 3:\nInput: s = \"0\"\nOutput: 0\nExplanation: There is no character that is mapped to a number starting with 0.\n\nThe only valid mappings with 0 are 'J' -> \"10\" and 'T' -> \"20\", neither of which start with 0.\n\nHence, there are no valid ways to decode this since all digits need to be mapped.\n\nExample 4:\nInput: s = \"06\"\nOutput: 0\nExplanation: \"06\" cannot be mapped to \"F\" because of the leading zero (\"6\" is different from \"06\").\n\nConstraints:\n`1 <= s.length <= 100`\n`s` contains only digits and may contain leading zero(s).",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "12",
+          "expected_output": "2"
+        },
+        {
+          "input": "226",
+          "expected_output": "3"
+        },
+        {
+          "input": "0",
+          "expected_output": "0"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Add Two Numbers",
+      "description": "You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.\n\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself.\n\nExample 1:\nInput: l1 = [2,4,3], l2 = [5,6,4]\nOutput: [7,0,8]\nExplanation: 342 + 465 = 807.\n\nExample 2:\nInput: l1 = [0], l2 = [0]\nOutput: [0]\n\nExample 3:\nInput: l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]\nOutput: [8,9,9,9,0,0,0,1]\n\nConstraints:\nThe number of nodes in each linked list is in the range `[1, 100]`.\n\n`0 <= Node.val <= 9`\nIt is guaranteed that the list represents a number that does not have leading zeros.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3 2 4 3",
+          "expected_output": "[7, 0, 8]"
+        },
+        {
+          "input": "1 0",
+          "expected_output": "[0]"
+        },
+        {
+          "input": "7 9 9 9 9 9 9 9",
+          "expected_output": "[8, 9, 9, 9, 0, 0, 0, 1]"
+        }
+      ]
+    },
+    {
+      "id": 238,
+      "title": "Product of Array Except Self",
+      "description": "Given an integer array `nums`, return an array `answer` such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`.\n\nThe product of any prefix or suffix of `nums` is guaranteed to fit in a 32-bit integer.\n\nExample 1:\nInput: nums = [1,2,3,4]\nOutput: [24,12,8,6]\n\nExample 2:\nInput: nums = [-1,1,0,-3,3]\nOutput: [0,0,9,0,0]\n\nConstraints:\n`2 <= nums.length <= 105`\n`-30 <= nums[i] <= 30`\nThe product of any prefix or suffix of `nums` is guaranteed to fit in a 32-bit integer.\n\nFollow up:\nCould you solve it in `O(n)` time complexity and without using division?\nCould you solve it with `O(1)` constant space complexity? (The output array does not count as extra space for space complexity analysis.)",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "4 1 2 3 4",
+          "expected_output": "[24, 12, 8, 6]"
+        },
+        {
+          "input": "5 -1 1 0 -3 3",
+          "expected_output": "[0, 0, 9, 0, 0]"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Longest Substring Without Repeating Characters",
+      "description": "Given a string `s`, find the length of the longest substring without repeating characters.\n\nExample 1:\nInput: s = \"abcabcbb\"\nOutput: 3\nExplanation: The answer is \"abc\", with the length of 3.\n\nExample 2:\nInput: s = \"bbbbb\"\nOutput: 1\nExplanation: The answer is \"b\", with the length of 1.\n\nExample 3:\nInput: s = \"pwwkew\"\nOutput: 3\nExplanation: The answer is \"wke\", with the length of 3.\n\nNotice that the answer must be a substring, \"pwke\" is a subsequence and not a substring.\n\nExample 4:\nInput: s = \"\"\nOutput: 0\n\nConstraints:\n`0 <= s.length <= 5 * 104`\n`s` consists of English letters, digits, symbols and spaces.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "abcabcbb",
+          "expected_output": "3"
+        },
+        {
+          "input": "bbbbb",
+          "expected_output": "1"
+        },
+        {
+          "input": "pwwkew",
+          "expected_output": "3"
+        }
+      ]
+    },
+    {
+      "id": 253,
+      "title": "Meeting Rooms II",
+      "description": "Given an array of meeting time intervals `intervals` where `intervals[i] = [starti, endi]`, return the minimum number of conference rooms required.\n\nExample 1:\nInput: intervals = [[0,30],[5,10],[15,20]]\nOutput: 2\n\nExample 2:\nInput: intervals = [[7,10],[2,4]]\nOutput: 1\n\nConstraints:\n`1 <= intervals.length <= 104`\n`0 <= starti < endi <= 106`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3 0 30 5 10 15 20",
+          "expected_output": "2"
+        },
+        {
+          "input": "2 7 10 2 4",
+          "expected_output": "1"
+        }
+      ]
+    },
+    {
+      "id": 380,
+      "title": "Insert Delete GetRandom O(1)",
+      "description": "Implement the `RandomizedSet` class:\n`RandomizedSet()` Initializes the `RandomizedSet` object.\n\n`bool insert(int val)` Inserts an item `val` into the set if not present. Returns `true` if the item was not present, `false` otherwise.\n\n`bool remove(int val)` Removes an item `val` from the set if present. Returns `true` if the item was present, `false` otherwise.\n\n`int getRandom()` Returns a random element from the current set of elements (it's guaranteed that at least one element exists when this method is called). Each element must have the same probability of being returned.\n\nExample 1:\nInput\n[\"RandomizedSet\", \"insert\", \"remove\", \"insert\", \"getRandom\", \"remove\", \"insert\", \"getRandom\"]\n[[], [1], [2], [2], [], [1], [2], []]\nOutput\n[null, true, false, true, 2, true, false, 2]\nExplanation\nRandomizedSet randomizedSet = new RandomizedSet();\nrandomizedSet.insert(1); // Inserts 1 to the set. Returns true as 1 was inserted successfully.\n\nrandomizedSet.remove(2); // Returns false as 2 does not exist in the set.\n\nrandomizedSet.insert(2); // Inserts 2 to the set, returns true. Set now contains [1,2].\n\nrandomizedSet.getRandom(); // getRandom() should return either 1 or 2 randomly.\n\nrandomizedSet.remove(1); // Removes 1 from the set, returns true. Set now contains [2].\n\nrandomizedSet.insert(2); // 2 was already in the set, so return false.\n\nrandomizedSet.getRandom(); // Since 2 is the only number in the set, getRandom() will always return 2.\n\nConstraints:\n`-231 <= val <= 231 - 1`\nAt most `105` calls will be made to `insert`, `remove`, and `getRandom`.\n\nThere will be at least one element in the data structure when `getRandom` is called.\n\nFollow up: Could you implement the functions of the class with each function works in average `O(1)` time?",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "insert 1\ninsert 2\nremove 1\nrandom",
+          "expected_output": "2"
+        }
+      ]
+    },
+    {
+      "id": 973,
+      "title": "K Closest Points to Origin",
+      "description": "Given an array of `points` where `points[i] = [xi, yi]` represents a point on the X-Y plane and an integer `k`, return the `k` closest points to the origin `(0, 0)`.\n\nThe distance between two points on the X-Y plane is the Euclidean distance (i.e., `√(x1 - x2)2 + (y1 - y2)2`).\n\nYou may return the answer in any order. The answer is guaranteed to be unique (except for the order that it is in).\n\nExample 1:\nInput: points = [[1,3],[-2,2]], k = 1\nOutput: [[-2,2]]\nExplanation:\nThe distance between (1, 3) and the origin is sqrt(10).\n\nThe distance between (-2, 2) and the origin is sqrt(8).\n\nSince sqrt(8) < sqrt(10), (-2, 2) is closer to the origin.\n\nWe only want the closest k = 1 points from the origin, so the answer is just [[-2,2]].\n\nExample 2:\nInput: points = [[3,3],[5,-1],[-2,4]], k = 2\nOutput: [[3,3],[-2,4]]\nExplanation: The answer [[-2,4],[3,3]] would also be accepted.\n\nConstraints:\n`1 <= k <= points.length <= 104`\n`-104 < xi, yi < 104`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "2 2 1 3 -2 2",
+          "expected_output": "[[-2, 2]]"
+        },
+        {
+          "input": "3 2 3 3 5 -1 -2 4",
+          "expected_output": "[[3, 3], [-2, 4]]"
+        }
+      ]
+    },
+    {
+      "id": 981,
+      "title": "Time Based Key-Value Store",
+      "description": "Create a timebased key-value store class `TimeMap`, that supports two operations.\n\n1. `set(string key, string value, int timestamp)`\nStores the `key` and `value`, along with the given `timestamp`.\n\n2. `get(string key, int timestamp)`\nReturns a value such that `set(key, value, timestamp_prev)` was called previously, with `timestamp_prev <= timestamp`.\n\nIf there are multiple such values, it returns the one with the largest `timestamp_prev`.\n\nIf there are no values, it returns the empty string (`\"\"`).\n\nExample 1:\nInput: inputs = [\"TimeMap\",\"set\",\"get\",\"get\",\"set\",\"get\",\"get\"], inputs = [[],[\"foo\",\"bar\",1],[\"foo\",1],[\"foo\",3],[\"foo\",\"bar2\",4],[\"foo\",4],[\"foo\",5]]\nOutput: [null,null,\"bar\",\"bar\",null,\"bar2\",\"bar2\"]\nExplanation:\nTimeMap kv;\nkv.set(\"foo\", \"bar\", 1); // store the key \"foo\" and value \"bar\" along with timestamp = 1\nkv.get(\"foo\", 1);  // output \"bar\"\nkv.get(\"foo\", 3); // output \"bar\" since there is no value corresponding to foo at timestamp 3 and timestamp 2, then the only value is at timestamp 1 ie \"bar\"\nkv.set(\"foo\", \"bar2\", 4);\nkv.get(\"foo\", 4); // output \"bar2\"\nkv.get(\"foo\", 5); //output \"bar2\"\n\nExample 2:\nInput: inputs = [\"TimeMap\",\"set\",\"set\",\"get\",\"get\",\"get\",\"get\",\"get\"], inputs = [[],[\"love\",\"high\",10],[\"love\",\"low\",20],[\"love\",5],[\"love\",10],[\"love\",15],[\"love\",20],[\"love\",25]]\nOutput: [null,null,null,\"\",\"high\",\"high\",\"low\",\"low\"]\nNote:\nAll key/value strings are lowercase.\n\nAll key/value strings have length in the range `[1, 100]`\nThe `timestamps` for all `TimeMap.set` operations are strictly increasing.\n\n`1 <= timestamp <= 10^7`\n`TimeMap.set` and `TimeMap.get` functions will be called a total of `120000` times (combined) per test case.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "7 0 foo bar 1 foo 1 foo 3 foo bar2 4 foo 4 foo 5",
+          "expected_output": "[None, None, 'bar', 'bar', None, 'bar2', 'bar2']"
+        },
+        {
+          "input": "8 0 love high 10 love low 20 love 5 love 10 love 15 love 20 love 25",
+          "expected_output": "[None, None, None, '', 'high', 'high', 'low', 'low']"
+        }
+      ]
+    },
+    {
+      "id": 221,
+      "title": "Maximal Square",
+      "description": "Given an `m x n` binary `matrix` filled with `0`'s and `1`'s, find the largest square containing only `1`'s and return its area.\n\nExample 1:\nInput: matrix = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]]\nOutput: 4\n\nExample 2:\nInput: matrix = [[\"0\",\"1\"],[\"1\",\"0\"]]\nOutput: 1\n\nExample 3:\nInput: matrix = [[\"0\"]]\nOutput: 0\n\nConstraints:\n`m == matrix.length`\n`n == matrix[i].length`\n`1 <= m, n <= 300`\n`matrix[i][j]` is `'0'` or `'1'`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "4 5 1 0 1 0 0 1 0 1 1 1 1 1 1 1 1 1 0 0 1 0",
+          "expected_output": "4"
+        },
+        {
+          "input": "2 2 0 1 1 0",
+          "expected_output": "1"
+        },
+        {
+          "input": "1 1 0",
+          "expected_output": "0"
+        }
+      ]
+    },
+    {
+      "id": 1010,
+      "title": "Pairs of Songs With Total Durations Divisible by 60",
+      "description": "You are given a list of songs where the ith song has a duration of `time[i]` seconds.\n\nReturn the number of pairs of songs for which their total duration in seconds is divisible by `60`. Formally, we want the number of indices `i`, `j` such that `i < j` with `(time[i] + time[j]) % 60 == 0`.\n\nExample 1:\nInput: time = [30,20,150,100,40]\nOutput: 3\nExplanation: Three pairs have a total duration divisible by 60:\n(time[0] = 30, time[2] = 150): total duration 180\n(time[1] = 20, time[3] = 100): total duration 120\n(time[1] = 20, time[4] = 40): total duration 60\n\nExample 2:\nInput: time = [60,60,60]\nOutput: 3\nExplanation: All three pairs have a total duration of 120, which is divisible by 60.\n\nConstraints:\n`1 <= time.length <= 6 * 104`\n`1 <= time[i] <= 500`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "5 30 20 150 100 40",
+          "expected_output": "3"
+        },
+        {
+          "input": "3 60 60 60",
+          "expected_output": "3"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Longest Palindromic Substring",
+      "description": "Given a string `s`, return the longest palindromic substring in `s`.\n\nExample 1:\nInput: s = \"babad\"\nOutput: \"bab\"\nNote: \"aba\" is also a valid answer.\n\nExample 2:\nInput: s = \"cbbd\"\nOutput: \"bb\"\n\nExample 3:\nInput: s = \"a\"\nOutput: \"a\"\n\nExample 4:\nInput: s = \"ac\"\nOutput: \"a\"\n\nConstraints:\n`1 <= s.length <= 1000`\n`s` consist of only digits and English letters (lower-case and/or upper-case),",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "babad",
+          "expected_output": "bab"
+        },
+        {
+          "input": "cbbd",
+          "expected_output": "bb"
+        },
+        {
+          "input": "a",
+          "expected_output": "a"
+        }
+      ]
+    },
+    {
+      "id": 1249,
+      "title": "Minimum Remove to Make Valid Parentheses",
+      "description": "Given a string s of `'('` , `')'` and lowercase English characters.\nYour task is to remove the minimum number of parentheses ( `'('` or `')'`, in any positions ) so that the resulting parentheses string is valid and return any valid string.\n\nFormally, a parentheses string is valid if and only if:\nIt is the empty string, contains only lowercase characters, or\nIt can be written as `AB` (`A` concatenated with `B`), where `A` and `B` are valid strings, or\nIt can be written as `(A)`, where `A` is a valid string.\n\nExample 1:\nInput: s = \"lee(t(c)o)de)\"\nOutput: \"lee(t(c)o)de\"\nExplanation: \"lee(t(co)de)\" , \"lee(t(c)ode)\" would also be accepted.\n\nExample 2:\nInput: s = \"a)b(c)d\"\nOutput: \"ab(c)d\"\n\nExample 3:\nInput: s = \"))((\"\nOutput: \"\"\nExplanation: An empty string is also valid.\n\nExample 4:\nInput: s = \"(a(b(c)d)\"\nOutput: \"a(b(c)d)\"\n\nConstraints:\n`1 <= s.length <= 10^5`\n`s[i]` is one of  `'('` , `')'` and lowercase English letters`.`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "lee(t(c)o)de)",
+          "expected_output": "lee(t(c)o)de"
+        },
+        {
+          "input": "a)b(c)d",
+          "expected_output": "ab(c)d"
+        },
+        {
+          "input": "))((",
+          "expected_output": ""
+        }
+      ]
+    },
+    {
+      "id": 560,
+      "title": "Subarray Sum Equals K",
+      "description": "Given an array of integers `nums` and an integer `k`, return the total number of continuous subarrays whose sum equals to `k`.\n\nExample 1:\nInput: nums = [1,1,1], k = 2\nOutput: 2\n\nExample 2:\nInput: nums = [1,2,3], k = 3\nOutput: 2\n\nConstraints:\n`1 <= nums.length <= 2 * 104`\n`-1000 <= nums[i] <= 1000`\n`-107 <= k <= 107`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3 1 1 1",
+          "expected_output": "2"
+        },
+        {
+          "input": "3 1 2 3",
+          "expected_output": "2"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "title": "Next Permutation",
+      "description": "Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.\n\nIf such an arrangement is not possible, it must rearrange it as the lowest possible order (i.e., sorted in ascending order).\n\nThe replacement must be in place and use only constant extra memory.\n\nExample 1:\nInput: nums = [1,2,3]\nOutput: [1,3,2]\n\nExample 2:\nInput: nums = [3,2,1]\nOutput: [1,2,3]\n\nExample 3:\nInput: nums = [1,1,5]\nOutput: [1,5,1]\n\nExample 4:\nInput: nums = [1]\nOutput: [1]\n\nConstraints:\n`1 <= nums.length <= 100`\n`0 <= nums[i] <= 100`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3 1 2 3",
+          "expected_output": "[1, 3, 2]"
+        },
+        {
+          "input": "3 3 2 1",
+          "expected_output": "[1, 2, 3]"
+        },
+        {
+          "input": "3 1 1 5",
+          "expected_output": "[1, 5, 1]"
+        }
+      ]
+    },
+    {
+      "id": 139,
+      "title": "Word Break",
+      "description": "Given a string `s` and a dictionary of strings `wordDict`, return `true` if `s` can be segmented into a space-separated sequence of one or more dictionary words.\n\nNote that the same word in the dictionary may be reused multiple times in the segmentation.\n\nExample 1:\nInput: s = \"leetcode\", wordDict = [\"leet\",\"code\"]\nOutput: true\nExplanation: Return true because \"leetcode\" can be segmented as \"leet code\".\n\nExample 2:\nInput: s = \"applepenapple\", wordDict = [\"apple\",\"pen\"]\nOutput: true\nExplanation: Return true because \"applepenapple\" can be segmented as \"apple pen apple\".\n\nNote that you are allowed to reuse a dictionary word.\n\nExample 3:\nInput: s = \"catsandog\", wordDict = [\"cats\",\"dog\",\"sand\",\"and\",\"cat\"]\nOutput: false\n\nConstraints:\n`1 <= s.length <= 300`\n`1 <= wordDict.length <= 1000`\n`1 <= wordDict[i].length <= 20`\n`s` and `wordDict[i]` consist of only lowercase English letters.\n\nAll the strings of `wordDict` are unique.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "2 leet code leetcode",
+          "expected_output": "True"
+        },
+        {
+          "input": "2 apple pen applepenapple",
+          "expected_output": "True"
+        },
+        {
+          "input": "5 cats dog sand and cat catsandog",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 215,
+      "title": "Kth Largest Element in an Array",
+      "description": "Given an integer array `nums` and an integer `k`, return the `kth` largest element in the array.\n\nNote that it is the `kth` largest element in the sorted order, not the `kth` distinct element.\n\nExample 1:\nInput: nums = [3,2,1,5,6,4], k = 2\nOutput: 5\n\nExample 2:\nInput: nums = [3,2,3,1,2,4,5,5,6], k = 4\nOutput: 4\n\nConstraints:\n`1 <= k <= nums.length <= 104`\n`-104 <= nums[i] <= 104`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "6 3 2 1 5 6 4",
+          "expected_output": "5"
+        },
+        {
+          "input": "9 3 2 3 1 2 4 5 5 6",
+          "expected_output": "4"
+        }
+      ]
+    },
+    {
+      "id": 1465,
+      "title": "Maximum Area of a Piece of Cake After Horizontal and Vertical Cuts",
+      "description": "Given a rectangular cake with height `h` and width `w`, and two arrays of integers `horizontalCuts` and `verticalCuts` where `horizontalCuts[i]` is the distance from the top of the rectangular cake to the `ith` horizontal cut and similarly, `verticalCuts[j]` is the distance from the left of the rectangular cake to the `jth` vertical cut.\n\nReturn the maximum area of a piece of cake after you cut at each horizontal and vertical position provided in the arrays `horizontalCuts` and `verticalCuts`. Since the answer can be a huge number, return this modulo 10^9 + 7.\n\nExample 1:\nInput: h = 5, w = 4, horizontalCuts = [1,2,4], verticalCuts = [1,3]\nOutput: 4\nExplanation: The figure above represents the given rectangular cake. Red lines are the horizontal and vertical cuts. After you cut the cake, the green piece of cake has the maximum area.\n\nExample 2:\nInput: h = 5, w = 4, horizontalCuts = [3,1], verticalCuts = [1]\nOutput: 6\nExplanation: The figure above represents the given rectangular cake. Red lines are the horizontal and vertical cuts. After you cut the cake, the green and yellow pieces of cake have the maximum area.\n\nExample 3:\nInput: h = 5, w = 4, horizontalCuts = [3], verticalCuts = [3]\nOutput: 9\n\nConstraints:\n`2 <= h, w <= 10^9`\n`1 <= horizontalCuts.length < min(h, 10^5)`\n`1 <= verticalCuts.length < min(w, 10^5)`\n`1 <= horizontalCuts[i] < h`\n`1 <= verticalCuts[i] < w`\nIt is guaranteed that all elements in `horizontalCuts` are distinct.\n\nIt is guaranteed that all elements in `verticalCuts` are distinct.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "5 4 3 1 2 4 2 1 3",
+          "expected_output": "4"
+        },
+        {
+          "input": "5 4 2 3 1 1 1",
+          "expected_output": "6"
+        },
+        {
+          "input": "5 4 1 3 1 3",
+          "expected_output": "9"
+        }
+      ]
+    },
+    {
+      "id": 1197,
+      "title": "Minimum Knight Moves",
+      "description": "In an infinite chess board with coordinates from `-infinity` to `+infinity`, you have a knight at square `[0, 0]`.\n\nA knight has 8 possible moves it can make, as illustrated below. Each move is two squares in a cardinal direction, then one square in an orthogonal direction.\n\nReturn the minimum number of steps needed to move the knight to the square `[x, y]`.  It is guaranteed the answer exists.\n\nExample 1:\nInput: x = 2, y = 1\nOutput: 1\nExplanation: [0, 0] → [2, 1]\n\nExample 2:\nInput: x = 5, y = 5\nOutput: 4\nExplanation: [0, 0] → [2, 1] → [4, 2] → [3, 4] → [5, 5]\n\nConstraints:\n`|x| + |y| <= 300`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "2 1",
+          "expected_output": "1"
+        },
+        {
+          "input": "5 5",
+          "expected_output": "4"
+        }
+      ]
+    },
+    {
+      "id": 528,
+      "title": "Random Pick with Weight",
+      "description": "You are given an array of positive integers `w` where `w[i]` describes the weight of `i``th` index (0-indexed).\n\nWe need to call the function `pickIndex()` which randomly returns an integer in the range `[0, w.length - 1]`. `pickIndex()` should return the integer proportional to its weight in the `w` array. For example, for `w = [1, 3]`, the probability of picking the index `0` is `1 / (1 + 3) = 0.25` (i.e 25%) while the probability of picking the index `1` is `3 / (1 + 3) = 0.75` (i.e 75%).\n\nMore formally, the probability of picking index `i` is `w[i] / sum(w)`.\n\nExample 1:\nInput\n[\"Solution\",\"pickIndex\"]\n[[[1]],[]]\nOutput\n[null,0]\nExplanation\nSolution solution = new Solution([1]);\nsolution.pickIndex(); // return 0. Since there is only one single element on the array the only option is to return the first element.\n\nExample 2:\nInput\n[\"Solution\",\"pickIndex\",\"pickIndex\",\"pickIndex\",\"pickIndex\",\"pickIndex\"]\n[[[1,3]],[],[],[],[],[]]\nOutput\n[null,1,1,1,1,0]\nExplanation\nSolution solution = new Solution([1, 3]);\nsolution.pickIndex(); // return 1. It's returning the second element (index = 1) that has probability of 3/4.\n\nsolution.pickIndex(); // return 1\nsolution.pickIndex(); // return 1\nsolution.pickIndex(); // return 1\nsolution.pickIndex(); // return 0. It's returning the first element (index = 0) that has probability of 1/4.\n\nSince this is a randomization problem, multiple answers are allowed so the following outputs can be considered correct :\n[null,1,1,1,1,0]\n[null,1,1,1,1,1]\n[null,1,1,1,0,0]\n[null,1,1,1,0,1]\n[null,1,0,1,0,0]\n......\n\nand so on.\n\nConstraints:\n`1 <= w.length <= 10000`\n`1 <= w[i] <= 10^5`\n`pickIndex` will be called at most `10000` times.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "1 1",
+          "expected_output": "0"
+        }
+      ]
+    },
+    {
+      "id": 443,
+      "title": "String Compression",
+      "description": "Given an array of characters `chars`, compress it using the following algorithm:\nBegin with an empty string `s`. For each group of consecutive repeating characters in `chars`:\nIf the group's length is 1, append the character to `s`.\n\nOtherwise, append the character followed by the group's length.\n\nThe compressed string `s` should not be returned separately, but instead be stored in the input character array `chars`. Note that group lengths that are 10 or longer will be split into multiple characters in `chars`.\n\nAfter you are done modifying the input array, return the new length of the array.\n\nFollow up:\nCould you solve it using only `O(1)` extra space?\n\nExample 1:\nInput: chars = [\"a\",\"a\",\"b\",\"b\",\"c\",\"c\",\"c\"]\nOutput: Return 6, and the first 6 characters of the input array should be: [\"a\",\"2\",\"b\",\"2\",\"c\",\"3\"]\nExplanation: The groups are \"aa\", \"bb\", and \"ccc\". This compresses to \"a2b2c3\".\n\nExample 2:\nInput: chars = [\"a\"]\nOutput: Return 1, and the first character of the input array should be: [\"a\"]\nExplanation: The only group is \"a\", which remains uncompressed since it's a single character.\n\nExample 3:\nInput: chars = [\"a\",\"b\",\"b\",\"b\",\"b\",\"b\",\"b\",\"b\",\"b\",\"b\",\"b\",\"b\",\"b\"]\nOutput: Return 4, and the first 4 characters of the input array should be: [\"a\",\"b\",\"1\",\"2\"].\nExplanation: The groups are \"a\" and \"bbbbbbbbbbbb\". This compresses to \"ab12\".\n\nExample 4:\nInput: chars = [\"a\",\"a\",\"a\",\"b\",\"b\",\"a\",\"a\"]\nOutput: Return 6, and the first 6 characters of the input array should be: [\"a\",\"3\",\"b\",\"2\",\"a\",\"2\"].\nExplanation: The groups are \"aaa\", \"bb\", and \"aa\". This compresses to \"a3b2a2\". Note that each group is independent even if two groups have the same character.\n\nConstraints:\n`1 <= chars.length <= 2000`\n`chars[i]` is a lower-case English letter, upper-case English letter, digit, or symbol.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "7 a a b b c c c",
+          "expected_output": "Return 6, and the first 6 characters of the input array should be: [\"a\",\"2\",\"b\",\"2\",\"c\",\"3\"]"
+        },
+        {
+          "input": "1 a",
+          "expected_output": "Return 1, and the first character of the input array should be: [\"a\"]"
+        },
+        {
+          "input": "13 a b b b b b b b b b b b b",
+          "expected_output": "Return 4, and the first 4 characters of the input array should be: [\"a\",\"b\",\"1\",\"2\"]"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "title": "Group Anagrams",
+      "description": "Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.\n\nAn Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.\n\nExample 1:\nInput: strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]\nOutput: [[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]\n\nExample 2:\nInput: strs = [\"\"]\nOutput: [[\"\"]]\n\nExample 3:\nInput: strs = [\"a\"]\nOutput: [[\"a\"]]\n\nConstraints:\n`1 <= strs.length <= 104`\n`0 <= strs[i].length <= 100`\n`strs[i]` consists of lower-case English letters.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "6 eat tea tan ate nat bat",
+          "expected_output": "[['bat'], ['nat', 'tan'], ['ate', 'eat', 'tea']]"
+        },
+        {
+          "input": "1 ",
+          "expected_output": "[['']]"
+        },
+        {
+          "input": "1 a",
+          "expected_output": "[['a']]"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": "3Sum",
+      "description": "Given an integer array nums, return all the triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, and `j != k`, and `nums[i] + nums[j] + nums[k] == 0`.\n\nNotice that the solution set must not contain duplicate triplets.\n\nExample 1:\nInput: nums = [-1,0,1,2,-1,-4]\nOutput: [[-1,-1,2],[-1,0,1]]\n\nExample 2:\nInput: nums = []\nOutput: []\n\nExample 3:\nInput: nums = [0]\nOutput: []\n\nConstraints:\n`0 <= nums.length <= 3000`\n`-105 <= nums[i] <= 105`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "6 -1 0 1 2 -1 -4",
+          "expected_output": "[[-1, -1, 2], [-1, 0, 1]]"
+        },
+        {
+          "input": "0 ",
+          "expected_output": "[]"
+        },
+        {
+          "input": "1 0",
+          "expected_output": "[]"
+        }
+      ]
+    },
+    {
+      "id": 1348,
+      "title": "Tweet Counts Per Frequency",
+      "description": "A social media company is trying to monitor activity on their site by analyzing the number of tweets that occur in select periods of time. These periods can be partitioned into smaller time chunks based on a certain frequency (every minute, hour, or day).\n\nFor example, the period `[10, 10000]` (in seconds) would be partitioned into the following time chunks with these frequencies:\nEvery minute (60-second chunks): `[10,69]`, `[70,129]`, `[130,189]`, `...`, `[9970,10000]`\nEvery hour (3600-second chunks): `[10,3609]`, `[3610,7209]`, `[7210,10000]`\nEvery day (86400-second chunks): `[10,10000]`\nNotice that the last chunk may be shorter than the specified frequency's chunk size and will always end with the end time of the period (`10000` in the above example).\n\nDesign and implement an API to help the company with their analysis.\n\nImplement the `TweetCounts` class:\n`TweetCounts()` Initializes the `TweetCounts` object.\n\n`void recordTweet(String tweetName, int time)` Stores the `tweetName` at the recorded `time` (in seconds).\n\n`List getTweetCountsPerFrequency(String freq, String tweetName, int startTime, int endTime)` Returns a list of integers representing the number of tweets with `tweetName` in each time chunk for the given period of time `[startTime, endTime]` (in seconds) and frequency `freq`.\n\n`freq` is one of `\"minute\"`, `\"hour\"`, or `\"day\"` representing a frequency of every minute, hour, or day respectively.\n\nExample:\nInput\n[\"TweetCounts\",\"recordTweet\",\"recordTweet\",\"recordTweet\",\"getTweetCountsPerFrequency\",\"getTweetCountsPerFrequency\",\"recordTweet\",\"getTweetCountsPerFrequency\"]\n[[],[\"tweet3\",0],[\"tweet3\",60],[\"tweet3\",10],[\"minute\",\"tweet3\",0,59],[\"minute\",\"tweet3\",0,60],[\"tweet3\",120],[\"hour\",\"tweet3\",0,210]]\nOutput\n[null,null,null,null,[2],[2,1],null,[4]]\nExplanation\nTweetCounts tweetCounts = new TweetCounts();\ntweetCounts.recordTweet(\"tweet3\", 0);                              // New tweet \"tweet3\" at time 0\ntweetCounts.recordTweet(\"tweet3\", 60);                             // New tweet \"tweet3\" at time 60\ntweetCounts.recordTweet(\"tweet3\", 10);                             // New tweet \"tweet3\" at time 10\ntweetCounts.getTweetCountsPerFrequency(\"minute\", \"tweet3\", 0, 59); // return [2]; chunk [0,59] had 2 tweets\ntweetCounts.getTweetCountsPerFrequency(\"minute\", \"tweet3\", 0, 60); // return [2,1]; chunk [0,59] had 2 tweets, chunk [60,60] had 1 tweet\ntweetCounts.recordTweet(\"tweet3\", 120);                            // New tweet \"tweet3\" at time 120\ntweetCounts.getTweetCountsPerFrequency(\"hour\", \"tweet3\", 0, 210);  // return [4]; chunk [0,210] had 4 tweets\n\nConstraints:\n`0 <= time, startTime, endTime <= 109`\n`0 <= endTime - startTime <= 104`\nThere will be at most `104` calls in total to `recordTweet` and `getTweetCountsPerFrequency`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "tweet 1\nget 1",
+          "expected_output": "1"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "title": "Letter Combinations of a Phone Number",
+      "description": "Given a string containing digits from `2-9` inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.\n\nA mapping of digit to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.\n\nExample 1:\nInput: digits = \"23\"\nOutput: [\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]\n\nExample 2:\nInput: digits = \"\"\nOutput: []\n\nExample 3:\nInput: digits = \"2\"\nOutput: [\"a\",\"b\",\"c\"]\n\nConstraints:\n`0 <= digits.length <= 4`\n`digits[i]` is a digit in the range `['2', '9']`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "23",
+          "expected_output": "['ad', 'ae', 'af', 'bd', 'be', 'bf', 'cd', 'ce', 'cf']"
+        },
+        {
+          "input": "0",
+          "expected_output": "[]"
+        },
+        {
+          "input": "2",
+          "expected_output": "['a', 'b', 'c']"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "title": "Search in Rotated Sorted Array",
+      "description": "There is an integer array `nums` sorted in ascending order (with distinct values).\n\nPrior to being passed to your function, `nums` is rotated at an unknown pivot index `k` (`0 <= k < nums.length`) such that the resulting array is `[nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]` (0-indexed). For example, `[0,1,2,4,5,6,7]` might be rotated at pivot index `3` and become `[4,5,6,7,0,1,2]`.\n\nGiven the array `nums` after the rotation and an integer `target`, return the index of `target` if it is in `nums`, or `-1` if it is not in `nums`.\n\nExample 1:\nInput: nums = [4,5,6,7,0,1,2], target = 0\nOutput: 4\n\nExample 2:\nInput: nums = [4,5,6,7,0,1,2], target = 3\nOutput: -1\n\nExample 3:\nInput: nums = [1], target = 0\nOutput: -1\n\nConstraints:\n`1 <= nums.length <= 5000`\n`-104 <= nums[i] <= 104`\nAll values of `nums` are unique.\n\n`nums` is guaranteed to be rotated at some pivot.\n\n`-104 <= target <= 104`\nFollow up: Can you achieve this in `O(log n)` time complexity?",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "7 4 5 6 7 0 1 2 0",
+          "expected_output": "4"
+        },
+        {
+          "input": "7 4 5 6 7 0 1 2 3",
+          "expected_output": "-1"
+        },
+        {
+          "input": "1 1 0",
+          "expected_output": "-1"
+        }
+      ]
+    },
+    {
+      "id": 695,
+      "title": "Max Area of Island",
+      "description": "Given a non-empty 2D array `grid` of 0's and 1's, an island is a group of `1`'s (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.\n\nFind the maximum area of an island in the given 2D array. (If there is no island, the maximum area is 0.)\n\nExample 1:\n[[0,0,1,0,0,0,0,1,0,0,0,0,0],\n [0,0,0,0,0,0,0,1,1,1,0,0,0],\n [0,1,1,0,1,0,0,0,0,0,0,0,0],\n [0,1,0,0,1,1,0,0,1,0,1,0,0],\n [0,1,0,0,1,1,0,0,1,1,1,0,0],\n [0,0,0,0,0,0,0,0,0,0,1,0,0],\n [0,0,0,0,0,0,0,1,1,1,0,0,0],\n [0,0,0,0,0,0,0,1,1,0,0,0,0]]\nGiven the above grid, return `6`. Note the answer is not 11, because the island must be connected 4-directionally.\n\nExample 2:\n[[0,0,0,0,0,0,0,0]]\nGiven the above grid, return `0`.\n\nNote: The length of each dimension in the given `grid` does not exceed 50.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "7 13 0 0 1 0 0 0 1 1 1 0 0 0 0 0 0 0 1 1 1 0 1 1 0 1 0 0 0 0 0 0 1 0 1 0 1 1 0 0 1 0 1 1 0 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0 0 1 1 1 0 0 0 0 0 0 0 1 1 0 0 0",
+          "expected_output": "6"
+        },
+        {
+          "input": "1 8 0 0 0 0 0 0 0",
+          "expected_output": "0"
+        }
+      ]
+    },
+    {
+      "id": 347,
+      "title": "Top K Frequent Elements",
+      "description": "Given an integer array `nums` and an integer `k`, return the `k` most frequent elements. You may return the answer in any order.\n\nExample 1:\nInput: nums = [1,1,1,2,2,3], k = 2\nOutput: [1,2]\n\nExample 2:\nInput: nums = [1], k = 1\nOutput: [1]\n\nConstraints:\n`1 <= nums.legth <= 105`\n`k` is in the range `[1, the number of unique elements in the array]`.\n\nIt is guaranteed that the answer is unique.\n\nFollow up: Your algorithm's time complexity must be better than `O(n log n)`, where n is the array's size.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "6 1 1 1 2 2 3",
+          "expected_output": "[1, 2]"
+        },
+        {
+          "input": "1 1",
+          "expected_output": "[1]"
+        }
+      ]
+    },
+    {
+      "id": 547,
+      "title": "Number of Provinces",
+      "description": "There are `n` cities. Some of them are connected, while some are not. If city `a` is connected directly with city `b`, and city `b` is connected directly with city `c`, then city `a` is connected indirectly with city `c`.\n\nA province is a group of directly or indirectly connected cities and no other cities outside of the group.\n\nYou are given an `n x n` matrix `isConnected` where `isConnected[i][j] = 1` if the `ith` city and the `jth` city are directly connected, and `isConnected[i][j] = 0` otherwise.\n\nReturn the total number of provinces.\n\nExample 1:\nInput: isConnected = [[1,1,0],[1,1,0],[0,0,1]]\nOutput: 2\n\nExample 2:\nInput: isConnected = [[1,0,0],[0,1,0],[0,0,1]]\nOutput: 3\n\nConstraints:\n`1 <= n <= 200`\n`n == isConnected.length`\n`n == isConnected[i].length`\n`isConnected[i][j]` is `1` or `0`.\n\n`isConnected[i][i] == 1`\n`isConnected[i][j] == isConnected[j][i]`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3 3 1 1 0 1 1 0 0 0 1",
+          "expected_output": "2"
+        },
+        {
+          "input": "3 3 1 0 0 0 1 0 0 0 1",
+          "expected_output": "3"
+        }
+      ]
+    },
+    {
+      "id": 236,
+      "title": "Lowest Common Ancestor of a Binary Tree",
+      "description": "Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.\n\nAccording to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes `p` and `q` as the lowest node in `T` that has both `p` and `q` as descendants (where we allow a node to be a descendant of itself).”\n\nExample 1:\nInput: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1\nOutput: 3\nExplanation: The LCA of nodes 5 and 1 is 3.\n\nExample 2:\nInput: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4\nOutput: 5\nExplanation: The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.\n\nExample 3:\nInput: root = [1,2], p = 1, q = 2\nOutput: 1\n\nConstraints:\nThe number of nodes in the tree is in the range `[2, 105]`.\n\n`-109 <= Node.val <= 109`\nAll `Node.val` are unique.\n\n`p != q`\n`p` and `q` will exist in the tree.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "11 3 5 1 6 2 0 8 -1 -1 7 4 5 1",
+          "expected_output": "3"
+        },
+        {
+          "input": "11 3 5 1 6 2 0 8 -1 -1 7 4 5 4",
+          "expected_output": "5"
+        },
+        {
+          "input": "2 1 2 1 2",
+          "expected_output": "1"
+        }
+      ]
+    },
+    {
+      "id": 1209,
+      "title": "Remove All Adjacent Duplicates in String II",
+      "description": "Given a string `s`, a k duplicate removal consists of choosing `k` adjacent and equal letters from `s` and removing them causing the left and the right side of the deleted substring to concatenate together.\n\nWe repeatedly make `k` duplicate removals on `s` until we no longer can.\n\nReturn the final string after all such duplicate removals have been made.\n\nIt is guaranteed that the answer is unique.\n\nExample 1:\nInput: s = \"abcd\", k = 2\nOutput: \"abcd\"\nExplanation: There's nothing to delete.\n\nExample 2:\nInput: s = \"deeedbbcccbdaa\", k = 3\nOutput: \"aa\"\nExplanation:\nFirst delete \"eee\" and \"ccc\", get \"ddbbbdaa\"\nThen delete \"bbb\", get \"dddaa\"\nFinally delete \"ddd\", get \"aa\"\n\nExample 3:\nInput: s = \"pbbcggttciiippooaais\", k = 2\nOutput: \"ps\"\n\nConstraints:\n`1 <= s.length <= 10^5`\n`2 <= k <= 10^4`\n`s` only contains lower case English letters.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "abcd\n2",
+          "expected_output": "abcd"
+        },
+        {
+          "input": "deeedbbcccbdaa\n3",
+          "expected_output": "aa"
+        },
+        {
+          "input": "pbbcggttciiippooaais\n2",
+          "expected_output": "ps"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "title": "Spiral Matrix",
+      "description": "Given an `m x n` `matrix`, return all elements of the `matrix` in spiral order.\n\nExample 1:\nInput: matrix = [[1,2,3],[4,5,6],[7,8,9]]\nOutput: [1,2,3,6,9,8,7,4,5]\n\nExample 2:\nInput: matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]\nOutput: [1,2,3,4,8,12,11,10,9,5,6,7]\n\nConstraints:\n`m == matrix.length`\n`n == matrix[i].length`\n`1 <= m, n <= 10`\n`-100 <= matrix[i][j] <= 100`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3 3 1 2 3 4 5 6 7 8 9",
+          "expected_output": "[1, 2, 3, 6, 9, 8, 7, 4, 5]"
+        },
+        {
+          "input": "3 4 1 2 3 4 5 6 7 8 9 10 11 12",
+          "expected_output": "[1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]"
+        }
+      ]
+    },
+    {
+      "id": 138,
+      "title": "Copy List with Random Pointer",
+      "description": "A linked list of length `n` is given such that each node contains an additional random pointer, which could point to any node in the list, or `null`.\n\nConstruct a deep copy of the list. The deep copy should consist of exactly `n` brand new nodes, where each new node has its value set to the value of its corresponding original node. Both the `next` and `random` pointer of the new nodes should point to new nodes in the copied list such that the pointers in the original list and copied list represent the same list state. None of the pointers in the new list should point to nodes in the original list.\n\nFor example, if there are two nodes `X` and `Y` in the original list, where `X.random --> Y`, then for the corresponding two nodes `x` and `y` in the copied list, `x.random --> y`.\n\nReturn the head of the copied linked list.\n\nThe linked list is represented in the input/output as a list of `n` nodes. Each node is represented as a pair of `[val, random_index]` where:\n`val`: an integer representing `Node.val`\n`random_index`: the index of the node (range from `0` to `n-1`) that the `random` pointer points to, or `null` if it does not point to any node.\n\nYour code will only be given the `head` of the original linked list.\n\nExample 1:\nInput: head = [[7,null],[13,0],[11,4],[10,2],[1,0]]\nOutput: [[7,null],[13,0],[11,4],[10,2],[1,0]]\n\nExample 2:\nInput: head = [[1,1],[2,1]]\nOutput: [[1,1],[2,1]]\n\nExample 3:\nInput: head = [[3,null],[3,0],[3,null]]\nOutput: [[3,null],[3,0],[3,null]]\n\nExample 4:\nInput: head = []\nOutput: []\nExplanation: The given linked list is empty (null pointer), so return null.\n\nConstraints:\n`0 <= n <= 1000`\n`-10000 <= Node.val <= 10000`\n`Node.random` is `null` or is pointing to some node in the linked list.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "5 [7, None] [13, 0] [11, 4] [10, 2] [1, 0]",
+          "expected_output": "[[7, None], [13, 0], [11, 4], [10, 2], [1, 0]]"
+        },
+        {
+          "input": "2 [1, 1] [2, 1]",
+          "expected_output": "[[1, 1], [2, 1]]"
+        },
+        {
+          "input": "3 [3, None] [3, 0] [3, None]",
+          "expected_output": "[[3, None], [3, 0], [3, None]]"
+        }
+      ]
+    },
+    {
+      "id": 739,
+      "title": "Daily Temperatures",
+      "description": "Given a list of daily temperatures `T`, return a list such that, for each day in the input, tells you how many days you would have to wait until a warmer temperature.  If there is no future day for which this is possible, put `0` instead.\n\nFor example, given the list of temperatures `T = [73, 74, 75, 71, 69, 72, 76, 73]`, your output should be `[1, 1, 4, 2, 1, 1, 0, 0]`.\n\nNote:\nThe length of `temperatures` will be in the range `[1, 30000]`.\n\nEach temperature will be an integer in the range `[30, 100]`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "8 73 74 75 71 69 72 76 73",
+          "expected_output": "[1, 1, 4, 2, 1, 1, 0, 0]"
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "title": "Word Search",
+      "description": "Given an `m x n` grid of characters `board` and a string `word`, return `true` if `word` exists in the grid.\n\nThe word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.\n\nExample 1:\nInput: board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"ABCCED\"\nOutput: true\n\nExample 2:\nInput: board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"SEE\"\nOutput: true\n\nExample 3:\nInput: board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"ABCB\"\nOutput: false\n\nConstraints:\n`m == board.length`\n`n = board[i].length`\n`1 <= m, n <= 6`\n`1 <= word.length <= 15`\n`board` and `word` consists of only lowercase and uppercase English letters.\n\nFollow up: Could you use search pruning to make your solution faster with a larger `board`?",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3 4 A B C E S F C S A D E E",
+          "expected_output": "True"
+        },
+        {
+          "input": "3 4 A B C E S F C S A D E E",
+          "expected_output": "True"
+        },
+        {
+          "input": "3 4 A B C E S F C S A D E E",
+          "expected_output": "False"
+        }
+      ]
+    },
+    {
+      "id": 394,
+      "title": "Decode String",
+      "description": "Given an encoded string, return its decoded string.\n\nThe encoding rule is: `k[encoded_string]`, where the `encoded_string` inside the square brackets is being repeated exactly `k` times. Note that `k` is guaranteed to be a positive integer.\n\nYou may assume that the input string is always valid; No extra white spaces, square brackets are well-formed, etc.\n\nFurthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, `k`. For example, there won't be input like `3a` or `2[4]`.\n\nExample 1:\nInput: s = \"3[a]2[bc]\"\nOutput: \"aaabcbc\"\n\nExample 2:\nInput: s = \"3[a2[c]]\"\nOutput: \"accaccacc\"\n\nExample 3:\nInput: s = \"2[abc]3[cd]ef\"\nOutput: \"abcabccdcdcdef\"\n\nExample 4:\nInput: s = \"abc3[cd]xyz\"\nOutput: \"abccdcdcdxyz\"\n\nConstraints:\n`1 <= s.length <= 30`\n`s` consists of lowercase English letters, digits, and square brackets `'[]'`.\n\n`s` is guaranteed to be a valid input.\n\nAll the integers in `s` are in the range `[1, 300]`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3[a]2[bc]",
+          "expected_output": "aaabcbc"
+        },
+        {
+          "input": "3[a2[c]]",
+          "expected_output": "accaccacc"
+        },
+        {
+          "input": "2[abc]3[cd]ef",
+          "expected_output": "abcabccdcdcdef"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "title": "Generate Parentheses",
+      "description": "Given `n` pairs of parentheses, write a function to generate all combinations of well-formed parentheses.\n\nExample 1:\nInput: n = 3\nOutput: [\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]\n\nExample 2:\nInput: n = 1\nOutput: [\"()\"]\n\nConstraints:\n`1 <= n <= 8`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3",
+          "expected_output": "['((()))', '(()())', '(())()', '()(())', '()()()']"
+        },
+        {
+          "input": "1",
+          "expected_output": "['()']"
+        }
+      ]
+    },
+    {
+      "id": 199,
+      "title": "Binary Tree Right Side View",
+      "description": "Given the `root` of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.\n\nExample 1:\nInput: root = [1,2,3,null,5,null,4]\nOutput: [1,3,4]\n\nExample 2:\nInput: root = [1,null,3]\nOutput: [1,3]\n\nExample 3:\nInput: root = []\nOutput: []\n\nConstraints:\nThe number of nodes in the tree is in the range `[0, 100]`.\n\n`-100 <= Node.val <= 100`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "7 1 2 3 -1 5 -1 4",
+          "expected_output": "[1, 3, 4]"
+        },
+        {
+          "input": "3 1 -1 3",
+          "expected_output": "[1, 3]"
+        },
+        {
+          "input": "0 ",
+          "expected_output": "[]"
+        }
+      ]
+    },
+    {
+      "id": 289,
+      "title": "Game of Life",
+      "description": "According to Wikipedia's article: \"The Game of Life, also known simply as Life, is a cellular automaton devised by the British mathematician John Horton Conway in 1970.\"\nThe board is made up of an `m x n` grid of cells, where each cell has an initial state: live (represented by a `1`) or dead (represented by a `0`). Each cell interacts with its eight neighbors (horizontal, vertical, diagonal) using the following four rules (taken from the above Wikipedia article):\nAny live cell with fewer than two live neighbors dies as if caused by under-population.\n\nAny live cell with two or three live neighbors lives on to the next generation.\n\nAny live cell with more than three live neighbors dies, as if by over-population.\n\nAny dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.\n\nThe next state is created by applying the above rules simultaneously to every cell in the current state, where births and deaths occur simultaneously. Given the current state of the `m x n` grid `board`, return the next state.\n\nExample 1:\nInput: board = [[0,1,0],[0,0,1],[1,1,1],[0,0,0]]\nOutput: [[0,0,0],[1,0,1],[0,1,1],[0,1,0]]\n\nExample 2:\nInput: board = [[1,1],[1,0]]\nOutput: [[1,1],[1,1]]\n\nConstraints:\n`m == board.length`\n`n == board[i].length`\n`1 <= m, n <= 25`\n`board[i][j]` is `0` or `1`.\n\nFollow up:\nCould you solve it in-place? Remember that the board needs to be updated simultaneously: You cannot update some cells first and then use their updated values to update other cells.\n\nIn this question, we represent the board using a 2D array. In principle, the board is infinite, which would cause problems when the active area encroaches upon the border of the array (i.e., live cells reach the border). How would you address these problems?",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "4 3 0 1 0 0 0 1 1 1 1 0 0 0",
+          "expected_output": "[[0, 0, 0], [1, 0, 1], [0, 1, 1], [0, 1, 0]]"
+        },
+        {
+          "input": "2 2 1 1 1 0",
+          "expected_output": "[[1, 1], [1, 1]]"
+        }
+      ]
+    },
+    {
+      "id": 1428,
+      "title": "Leftmost Column with at Least a One",
+      "description": "(This problem is an interactive problem.)\nA row-sorted binary matrix means that all elements are `0` or `1` and each row of the matrix is sorted in non-decreasing order.\n\nGiven a row-sorted binary matrix `binaryMatrix`, return the index (0-indexed) of the leftmost column with a 1 in it. If such an index does not exist, return `-1`.\n\nYou can't access the Binary Matrix directly. You may only access the matrix using a `BinaryMatrix` interface:\n`BinaryMatrix.get(row, col)` returns the element of the matrix at index `(row, col)` (0-indexed).\n\n`BinaryMatrix.dimensions()` returns the dimensions of the matrix as a list of 2 elements `[rows, cols]`, which means the matrix is `rows x cols`.\n\nSubmissions making more than `1000` calls to `BinaryMatrix.get` will be judged Wrong Answer. Also, any solutions that attempt to circumvent the judge will result in disqualification.\n\nFor custom testing purposes, the input will be the entire binary matrix `mat`. You will not have access to the binary matrix directly.\n\nExample 1:\nInput: mat = [[0,0],[1,1]]\nOutput: 0\n\nExample 2:\nInput: mat = [[0,0],[0,1]]\nOutput: 1\n\nExample 3:\nInput: mat = [[0,0],[0,0]]\nOutput: -1\n\nExample 4:\nInput: mat = [[0,0,0,1],[0,0,1,1],[0,1,1,1]]\nOutput: 1\n\nConstraints:\n`rows == mat.length`\n`cols == mat[i].length`\n`1 <= rows, cols <= 100`\n`mat[i][j]` is either `0` or `1`.\n\n`mat[i]` is sorted in non-decreasing order.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "2 2 0 0 1 1",
+          "expected_output": "0"
+        },
+        {
+          "input": "2 2 0 0 0 1",
+          "expected_output": "1"
+        },
+        {
+          "input": "2 2 0 0 0 0",
+          "expected_output": "-1"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "title": "Rotate Image",
+      "description": "You are given an n x n 2D `matrix` representing an image, rotate the image by 90 degrees (clockwise).\n\nYou have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.\n\nExample 1:\nInput: matrix = [[1,2,3],[4,5,6],[7,8,9]]\nOutput: [[7,4,1],[8,5,2],[9,6,3]]\n\nExample 2:\nInput: matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]\nOutput: [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]\n\nExample 3:\nInput: matrix = [[1]]\nOutput: [[1]]\n\nExample 4:\nInput: matrix = [[1,2],[3,4]]\nOutput: [[3,1],[4,2]]\n\nConstraints:\n`matrix.length == n`\n`matrix[i].length == n`\n`1 <= n <= 20`\n`-1000 <= matrix[i][j] <= 1000`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3 3 1 2 3 4 5 6 7 8 9",
+          "expected_output": "[[7, 4, 1], [8, 5, 2], [9, 6, 3]]"
+        },
+        {
+          "input": "4 4 5 1 9 11 2 4 8 10 13 3 6 7 15 14 12 16",
+          "expected_output": "[[15, 13, 2, 5], [14, 3, 4, 1], [12, 6, 8, 9], [16, 7, 10, 11]]"
+        },
+        {
+          "input": "1 1 1",
+          "expected_output": "[[1]]"
+        }
+      ]
+    },
+    {
+      "id": 1152,
+      "title": "Analyze User Website Visit Pattern",
+      "description": "We are given some website visits: the user with name `username[i]` visited the website `website[i]` at time `timestamp[i]`.\n\nA 3-sequence is a list of websites of length 3 sorted in ascending order by the time of their visits.  (The websites in a 3-sequence are not necessarily distinct.)\nFind the 3-sequence visited by the largest number of users. If there is more than one solution, return the lexicographically smallest such 3-sequence.\n\nExample 1:\nInput: username = [\"joe\",\"joe\",\"joe\",\"james\",\"james\",\"james\",\"james\",\"mary\",\"mary\",\"mary\"], timestamp = [1,2,3,4,5,6,7,8,9,10], website = [\"home\",\"about\",\"career\",\"home\",\"cart\",\"maps\",\"home\",\"home\",\"about\",\"career\"]\nOutput: [\"home\",\"about\",\"career\"]\nExplanation:\nThe tuples in this example are:\n[\"joe\", 1, \"home\"]\n[\"joe\", 2, \"about\"]\n[\"joe\", 3, \"career\"]\n[\"james\", 4, \"home\"]\n[\"james\", 5, \"cart\"]\n[\"james\", 6, \"maps\"]\n[\"james\", 7, \"home\"]\n[\"mary\", 8, \"home\"]\n[\"mary\", 9, \"about\"]\n[\"mary\", 10, \"career\"]\nThe 3-sequence (\"home\", \"about\", \"career\") was visited at least once by 2 users.\n\nThe 3-sequence (\"home\", \"cart\", \"maps\") was visited at least once by 1 user.\n\nThe 3-sequence (\"home\", \"cart\", \"home\") was visited at least once by 1 user.\n\nThe 3-sequence (\"home\", \"maps\", \"home\") was visited at least once by 1 user.\n\nThe 3-sequence (\"cart\", \"maps\", \"home\") was visited at least once by 1 user.\n\nNote:\n`3 <= N = username.length = timestamp.length = website.length <= 50`\n`1 <= username[i].length <= 10`\n`0 <= timestamp[i] <= 10^9`\n`1 <= website[i].length <= 10`\nBoth `username[i]` and `website[i]` contain only lowercase characters.\n\nIt is guaranteed that there is at least one user who visited at least 3 websites.\n\nNo user visits two websites at the same time.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "10 joe joe joe james james james james mary mary mary",
+          "expected_output": "['home', 'about', 'career']"
+        }
+      ]
+    },
+    {
+      "id": 332,
+      "title": "Reconstruct Itinerary",
+      "description": "You are given a list of airline `tickets` where `tickets[i] = [fromi, toi]` represent the departure and the arrival airports of one flight. Reconstruct the itinerary in order and return it.\n\nAll of the tickets belong to a man who departs from `\"JFK\"`, thus, the itinerary must begin with `\"JFK\"`. If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string.\n\nFor example, the itinerary `[\"JFK\", \"LGA\"]` has a smaller lexical order than `[\"JFK\", \"LGB\"]`.\n\nYou may assume all tickets form at least one valid itinerary. You must use all the tickets once and only once.\n\nExample 1:\nInput: tickets = [[\"MUC\",\"LHR\"],[\"JFK\",\"MUC\"],[\"SFO\",\"SJC\"],[\"LHR\",\"SFO\"]]\nOutput: [\"JFK\",\"MUC\",\"LHR\",\"SFO\",\"SJC\"]\n\nExample 2:\nInput: tickets = [[\"JFK\",\"SFO\"],[\"JFK\",\"ATL\"],[\"SFO\",\"ATL\"],[\"ATL\",\"JFK\"],[\"ATL\",\"SFO\"]]\nOutput: [\"JFK\",\"ATL\",\"JFK\",\"SFO\",\"ATL\",\"SFO\"]\nExplanation: Another possible reconstruction is [\"JFK\",\"SFO\",\"ATL\",\"JFK\",\"ATL\",\"SFO\"] but it is larger in lexical order.\n\nConstraints:\n`1 <= tickets.length <= 300`\n`tickets[i].length == 2`\n`fromi.length == 3`\n`toi.length == 3`\n`fromi` and `toi` consist of uppercase English letters.\n\n`fromi != toi`",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "4 2 MUC LHR JFK MUC SFO SJC LHR SFO",
+          "expected_output": "['JFK', 'MUC', 'LHR', 'SFO', 'SJC']"
+        },
+        {
+          "input": "5 2 JFK SFO JFK ATL SFO ATL ATL JFK ATL SFO",
+          "expected_output": "['JFK', 'ATL', 'JFK', 'SFO', 'ATL', 'SFO']"
+        }
+      ]
+    },
+    {
+      "id": 767,
+      "title": "Reorganize String",
+      "description": "Given a string `S`, check if the letters can be rearranged so that two characters that are adjacent to each other are not the same.\n\nIf possible, output any possible result.  If not possible, return the empty string.\n\nExample 1:\nInput: S = \"aab\"\nOutput: \"aba\"\n\nExample 2:\nInput: S = \"aaab\"\nOutput: \"\"\nNote:\n`S` will consist of lowercase letters and have length in range `[1, 500]`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "aab",
+          "expected_output": "aba"
+        },
+        {
+          "input": "aaab",
+          "expected_output": ""
+        }
+      ]
+    },
+    {
+      "id": 445,
+      "title": "Add Two Numbers II",
+      "description": "You are given two non-empty linked lists representing two non-negative integers. The most significant digit comes first and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.\n\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself.\n\nFollow up:\nWhat if you cannot modify the input lists? In other words, reversing the lists is not allowed.\n\nExample:\nInput: (7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)\nOutput: 7 -> 8 -> 0 -> 7",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "2 7 8 4 5 6 9 4 3",
+          "expected_output": "[7, 8, 0, 0]"
+        }
+      ]
+    },
+    {
+      "id": 518,
+      "title": "Coin Change 2",
+      "description": "You are given coins of different denominations and a total amount of money. Write a function to compute the number of combinations that make up that amount. You may assume that you have infinite number of each kind of coin.\n\nExample 1:\nInput: amount = 5, coins = [1, 2, 5]\nOutput: 4\nExplanation: there are four ways to make up the amount:\n5=5\n5=2+2+1\n5=2+1+1+1\n5=1+1+1+1+1\n\nExample 2:\nInput: amount = 3, coins = [2]\nOutput: 0\nExplanation: the amount of 3 cannot be made up just with coins of 2.\n\nExample 3:\nInput: amount = 10, coins = [10]\nOutput: 1\nNote:\nYou can assume that\n0 <= amount <= 5000\n1 <= coin <= 5000\nthe number of coins is less than 500\nthe answer is guaranteed to fit into signed 32-bit integer",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "3 1 2 5 5",
+          "expected_output": "4"
+        },
+        {
+          "input": "1 2 3",
+          "expected_output": "0"
+        },
+        {
+          "input": "1 10 10",
+          "expected_output": "1"
+        }
+      ]
+    },
+    {
+      "id": 341,
+      "title": "Flatten Nested List Iterator",
+      "description": "You are given a nested list of integers `nestedList`. Each element is either an integer or a list whose elements may also be integers or other lists. Implement an iterator to flatten it.\n\nImplement the `NestedIterator` class:\n`NestedIterator(List nestedList)` Initializes the iterator with the nested list `nestedList`.\n\n`int next()` Returns the next integer in the nested list.\n\n`boolean hasNext()` Returns `true` if there are still some integers in the nested list and `false` otherwise.\n\nExample 1:\nInput: nestedList = [[1,1],2,[1,1]]\nOutput: [1,1,2,1,1]\nExplanation: By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,1,2,1,1].\n\nExample 2:\nInput: nestedList = [1,[4,[6]]]\nOutput: [1,4,6]\nExplanation: By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,4,6].\n\nConstraints:\n`1 <= nestedList.length <= 500`\nThe values of the integers in the nested list is in the range `[-106, 106]`.",
+      "difficulty": "Medium",
+      "test_cases": [
+        {
+          "input": "5 1 1 2 1 1",
+          "expected_output": "[1, 1, 2, 1, 1]"
+        },
+        {
+          "input": "2 1 [4, [6]]",
+          "expected_output": "[1, 4, 6]"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+<section id="correctSection" class="hidden">
+    <div class="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-8 text-center">
+        <h2 class="text-2xl font-bold text-emerald-300 mb-2">Correct!</h2>
+        <p id="correctMessage" class="text-emerald-200/90 text-lg"></p>
+    </div>
+</section>
+
+<section id="hintsSection" class="mt-8 space-y-4 hidden">
+    <h2 class="text-xl font-semibold text-white">Hints</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+        <div id="hint1Card" class="rounded-xl border border-slate-800 bg-slate-900/80 p-5 border-l-4 border-l-emerald-500 hidden">
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-sm">1</div>
+                <h3 class="font-semibold text-white">Getting Started</h3>
+            </div>
+            <p id="hint1" class="text-slate-400 text-sm mb-4"></p>
+            <button id="showHint2Btn" class="text-sm text-emerald-400 hover:text-emerald-300 hidden" onclick="showHint(2)">Show Hint 2 →</button>
+        </div>
+        <div id="hint2Card" class="rounded-xl border border-slate-800 bg-slate-900/80 p-5 border-l-4 border-l-amber-500 hidden">
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-sm">2</div>
+                <h3 class="font-semibold text-white">Getting Closer</h3>
+            </div>
+            <p id="hint2" class="text-slate-400 text-sm mb-4"></p>
+            <button id="showHint3Btn" class="text-sm text-amber-400 hover:text-amber-300 hidden" onclick="showHint(3)">Show Hint 3 →</button>
+        </div>
+        <div id="hint3Card" class="rounded-xl border border-slate-800 bg-slate-900/80 p-5 border-l-4 border-l-rose-500 hidden">
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-8 bg-rose-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-sm">3</div>
+                <h3 class="font-semibold text-white">Almost There</h3>
+            </div>
+            <p id="hint3" class="text-slate-400 text-sm mb-4"></p>
+            <button id="showSolutionBtn" class="text-sm text-rose-400 hover:text-rose-300 hidden" onclick="showSolution()">Show solution →</button>
+        </div>
+    </div>
+    <div id="solutionSection" class="hidden rounded-xl border border-slate-800 bg-slate-950 p-5 border-l-4 border-l-violet-500">
+        <h3 class="font-semibold text-violet-300 mb-3">Complete Solution</h3>
+        <pre id="solutionCode" class="text-slate-300 font-mono text-sm overflow-x-auto whitespace-pre-wrap"></pre>
+    </div>
+</section>
