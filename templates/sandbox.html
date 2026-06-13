@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Sandbox Playground — Code Helper{% endblock %}
+{% block title %}Sandbox — DSA Coding Platform{% endblock %}
 
 {% block body %}
 <div class="bg-gray-50 min-h-[calc(100vh-3.5rem)] text-gray-900">
     <div class="container mx-auto px-4 py-8 max-w-6xl">
         <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">Sandbox Playground</h1>
-            <p class="text-gray-600">Open-ended practice — paste any problem and code your solution</p>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Sandbox</h1>
+            <p class="text-gray-600">Free-form environment — write any code, test inputs, and check your code for errors</p>
         </header>
 
         <main class="space-y-8">
@@ -26,7 +26,10 @@
                         <div>
                             <section class="bg-white rounded-lg shadow-md p-6">
                                 <div class="flex justify-between items-center mb-4">
-                                    <h2 class="text-2xl font-semibold text-gray-800">My Code</h2>
+                                    <div class="flex items-center space-x-3">
+                                        <h2 class="text-2xl font-semibold text-gray-800">My Code</h2>
+                                        <button type="button" onclick="resetCode()" class="text-xs text-red-600 hover:text-red-700 font-medium border border-red-200 hover:border-red-400 rounded px-2 py-0.5 transition">Reset Code</button>
+                                    </div>
                                     <div class="flex items-center space-x-2">
                                         <label for="languageSelect" class="text-sm font-medium text-gray-700">Language:</label>
                                         <select id="languageSelect"
@@ -134,4 +137,11 @@
 </div>
 
 {% include "partials/workspace_scripts.html" %}
+<script>
+    function resetCode() {
+        if (confirm("Are you sure you want to reset your code? This will clear all your current edits.")) {
+            document.getElementById('myCode').value = '';
+        }
+    }
+</script>
 {% endblock %}
