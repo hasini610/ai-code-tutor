@@ -159,35 +159,14 @@
                 <div class="flex items-center gap-2 pb-2 border-b border-slate-800">
                     <span class="text-lg">🎯</span>
                     <h2 class="text-base font-bold text-white">AI Coach Hints</h2>
-                    <span class="text-xs text-slate-500">Progressive feedback</span>
+                    <span class="text-xs text-slate-500">Chat-style feedback</span>
                 </div>
-                <div class="flex flex-col gap-4">
-                    <div id="hint1Card" class="rounded-xl border border-slate-800 bg-slate-900/80 p-5 border-l-4 border-l-sky-500 hidden">
-                        <div class="flex items-center mb-3">
-                            <div class="w-7 h-7 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-xs">1</div>
-                            <h3 class="font-semibold text-white text-sm">Conceptual Hint</h3>
-                        </div>
-                        <p id="hint1" class="text-slate-300 text-xs mb-3 leading-relaxed"></p>
-                        <button id="showHint2Btn" type="button" class="text-xs text-sky-400 hover:text-sky-300 hidden" onclick="showHint(2)">Unlock Hint 2 →</button>
-                    </div>
-                    <div id="hint2Card" class="rounded-xl border border-slate-800 bg-slate-900/80 p-5 border-l-4 border-l-amber-500 hidden">
-                        <div class="flex items-center mb-3">
-                            <div class="w-7 h-7 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-xs">2</div>
-                            <h3 class="font-semibold text-white text-sm">Structural Hint</h3>
-                        </div>
-                        <p id="hint2" class="text-slate-300 text-xs mb-3 leading-relaxed"></p>
-                        <button id="showHint3Btn" type="button" class="text-xs text-amber-400 hover:text-amber-300 hidden" onclick="showHint(3)">Unlock Hint 3 →</button>
-                    </div>
-                    <div id="hint3Card" class="rounded-xl border border-slate-800 bg-slate-900/80 p-5 border-l-4 border-l-violet-500 hidden">
-                        <div class="flex items-center mb-3">
-                            <div class="w-7 h-7 bg-violet-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-xs">3</div>
-                            <h3 class="font-semibold text-white text-sm">Solution-revealing Hint</h3>
-                        </div>
-                        <p id="hint3" class="text-slate-300 text-xs mb-3 leading-relaxed"></p>
-                        <button id="showSolutionBtn" type="button" class="text-xs text-violet-400 hover:text-violet-300 hidden" onclick="showSolution()">Reveal Complete Solution →</button>
-                    </div>
+                
+                <div id="chat-container" class="space-y-4 mt-4">
+                    <!-- Dynamic chat bubbles will go here -->
                 </div>
-                <div id="solutionSection" class="hidden rounded-xl border border-slate-800 bg-slate-950 p-5 border-l-4 border-l-emerald-500">
+
+                <div id="solutionSection" class="hidden rounded-xl border border-slate-800 bg-slate-950 p-5 border-l-4 border-l-emerald-500 mt-4">
                     <h3 class="text-sm font-semibold text-white mb-2">Complete Solution</h3>
                     <pre id="solutionCode" class="text-slate-300 font-mono text-xs overflow-x-auto whitespace-pre-wrap bg-slate-900/50 p-3 rounded-lg"></pre>
                 </div>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, abort, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, abort, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -422,6 +422,8 @@ def execute_code(script, language='python', stdin=''):
             'source_code': script,
             'language_id': language_id,
             'stdin': stdin or '',
+            'enable_per_process_and_thread_time_limit': True,
+            'enable_per_process_and_thread_memory_limit': True,
         }
         url = f'{JUDGE0_URL}/submissions?wait=true&base64_encoded=false'
         print(f'Judge0 request: language={language} (id={language_id}), stdin={repr(stdin)}')
@@ -539,7 +541,18 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/')
-def dashboard():
+def landing():
+    return render_template('landing.html')
+
+@app.route('/dashboard')
+@login_required
+def user_dashboard():
+    solved_records = SolvedProblem.query.filter_by(user_id=current_user.id).all()
+    solved_count = len(solved_records)
+    return render_template('user_dashboard.html', solved_count=solved_count, streak=3, recent_activity=solved_records[-5:])
+
+@app.route('/problems')
+def problems_list():
     data = load_problems_dataset()
     problems = data.get('problems', [])
     counts = data.get('counts_by_difficulty', {})
@@ -550,7 +563,7 @@ def dashboard():
         solved_ids = {r.problem_id for r in solved_records}
         
     return render_template(
-        'dashboard.html',
+        'problems.html',
         problems=problems,
         easy_count=counts.get('Easy', 0),
         medium_count=counts.get('Medium', 0),
@@ -572,7 +585,8 @@ def problem(problem_id: int):
     problem_view['description_html'] = format_problem_description(
         record.get('description', '')
     )
-    return render_template('problem.html', problem=problem_view)
+    all_problems = list(get_problems_by_id().values())
+    return render_template('problem.html', problem=problem_view, all_problems=all_problems)
 
 @app.route('/api/problems/<int:problem_id>/submit', methods=['POST'])
 def submit_problem(problem_id: int):
@@ -603,12 +617,23 @@ def submit_problem(problem_id: int):
             'results': summary['results'],
         }), 400
 
-    if summary['all_passed'] and current_user.is_authenticated:
-        solved = SolvedProblem.query.filter_by(user_id=current_user.id, problem_id=problem_id).first()
-        if not solved:
-            new_solved = SolvedProblem(user_id=current_user.id, problem_id=problem_id)
-            db.session.add(new_solved)
-            db.session.commit()
+    require_signup = False
+    if summary['all_passed']:
+        if current_user.is_authenticated:
+            solved = SolvedProblem.query.filter_by(user_id=current_user.id, problem_id=problem_id).first()
+            if not solved:
+                new_solved = SolvedProblem(user_id=current_user.id, problem_id=problem_id)
+                db.session.add(new_solved)
+                db.session.commit()
+        else:
+            unauth_solved_ids = session.get('unauth_solved_ids', [])
+            if problem_id not in unauth_solved_ids:
+                unauth_solved_ids.append(problem_id)
+                session['unauth_solved_ids'] = unauth_solved_ids
+                session['unauth_solves'] = len(unauth_solved_ids)
+            
+            if len(unauth_solved_ids) >= 2:
+                require_signup = True
 
     return jsonify({
         'problem_id': problem_id,
@@ -616,6 +641,7 @@ def submit_problem(problem_id: int):
         'total': summary['total'],
         'all_passed': summary['all_passed'],
         'results': summary['results'],
+        'require_signup': require_signup
     })
 
 
