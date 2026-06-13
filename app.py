@@ -1,4 +1,7 @@
-from flask import Flask, render_template, request, jsonify, abort
+from flask import Flask, render_template, request, jsonify, abort, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from groq import Groq
 import ast
 import os
@@ -13,6 +16,33 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-secret-key-change-me')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'info'
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+
+class SolvedProblem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    problem_id = db.Column(db.Integer, nullable=False)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+with app.app_context():
+    db.create_all()
+
 
 # Debug API key loading
 api_key = os.getenv('GROQ_API_KEY')
@@ -447,16 +477,84 @@ def execute_code(script, language='python', stdin=''):
     except Exception as e:
         return {'error': f'Execution error: {str(e)}', 'stdout': '', 'stderr': '', 'compile_output': ''}
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    
+    next_page = request.args.get('next')
+    
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        
+        if not username or not email or not password:
+            flash('All fields are required.', 'error')
+            return redirect(request.url)
+            
+        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+        if existing_user:
+            flash('Username or email already exists.', 'error')
+            return redirect(request.url)
+            
+        hashed_pw = generate_password_hash(password)
+        new_user = User(username=username, email=email, password_hash=hashed_pw)
+        db.session.add(new_user)
+        db.session.commit()
+        
+        flash('Registration successful! Please log in.', 'success')
+        if next_page:
+            return redirect(url_for('login', next=next_page))
+        return redirect(url_for('login'))
+        
+    return render_template('register.html', next_page=next_page)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+        
+    next_page = request.args.get('next')
+        
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password_hash, password):
+            login_user(user)
+            if next_page:
+                return redirect(next_page)
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid email or password.', 'error')
+            
+    return render_template('login.html', next_page=next_page)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
 @app.route('/')
 def dashboard():
     data = load_problems_dataset()
     problems = data.get('problems', [])
     counts = data.get('counts_by_difficulty', {})
+    
+    solved_ids = set()
+    if current_user.is_authenticated:
+        solved_records = SolvedProblem.query.filter_by(user_id=current_user.id).all()
+        solved_ids = {r.problem_id for r in solved_records}
+        
     return render_template(
         'dashboard.html',
         problems=problems,
         easy_count=counts.get('Easy', 0),
         medium_count=counts.get('Medium', 0),
+        solved_ids=solved_ids
     )
 
 
@@ -504,6 +602,13 @@ def submit_problem(problem_id: int):
             'problem_id': problem_id,
             'results': summary['results'],
         }), 400
+
+    if summary['all_passed'] and current_user.is_authenticated:
+        solved = SolvedProblem.query.filter_by(user_id=current_user.id, problem_id=problem_id).first()
+        if not solved:
+            new_solved = SolvedProblem(user_id=current_user.id, problem_id=problem_id)
+            db.session.add(new_solved)
+            db.session.commit()
 
     return jsonify({
         'problem_id': problem_id,

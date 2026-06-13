@@ -36,9 +36,32 @@
                    class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2.5 text-sm font-bold text-slate-900 shadow-lg shadow-orange-500/30 transition hover:from-amber-300 hover:to-orange-400 hover:shadow-orange-400/40">
                     🚀 Sandbox
                 </a>
+                
+                {% if current_user.is_authenticated %}
+                <span class="hidden sm:inline-block text-sm text-slate-300 ml-4 border-l border-slate-700 pl-4">Welcome, {{ current_user.username }}</span>
+                <a href="{{ url_for('logout') }}" class="text-sm font-medium text-rose-400 hover:text-rose-300 transition ml-2 sm:ml-0">Logout</a>
+                {% else %}
+                <div class="ml-2 sm:ml-4 flex items-center gap-3 border-l border-slate-700 pl-4">
+                    <a href="{{ url_for('login', next=request.path) }}" class="text-sm font-medium text-slate-300 hover:text-white transition">Sign In</a>
+                    <a href="{{ url_for('register', next=request.path) }}" class="rounded-lg bg-indigo-600 px-3 py-1.5 sm:px-4 sm:py-2 text-sm font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500">Sign Up</a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </nav>
+
+    <!-- Flash Messages -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-4 relative z-40">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 rounded-lg p-4 {% if category == 'error' %}bg-rose-500/10 border border-rose-500/50 text-rose-400{% else %}bg-emerald-500/10 border border-emerald-500/50 text-emerald-400{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
 
     {% block body %}{% endblock %}
 </body>
