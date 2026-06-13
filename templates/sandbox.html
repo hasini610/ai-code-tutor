@@ -2,146 +2,243 @@
 
 {% block title %}Sandbox — DSA Coding Platform{% endblock %}
 
+{% block head_extra %}
+<!-- Split.js for resizable columns -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.0/split.min.js"></script>
+<style>
+    /* Split.js Gutter styling */
+    .gutter {
+        background-color: #0f172a; /* slate-900 */
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    .gutter.gutter-horizontal {
+        cursor: col-resize;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="30"><circle cx="5" cy="5" r="1.5" fill="%23475569"/><circle cx="5" cy="15" r="1.5" fill="%23475569"/><circle cx="5" cy="25" r="1.5" fill="%23475569"/></svg>');
+        width: 6px;
+        transition: background-color 0.2s;
+    }
+    .gutter.gutter-horizontal:hover {
+        background-color: #3b82f6; /* blue-500 */
+    }
+
+    /* Custom Webkit scrollbars */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #090d16; /* very dark slate */
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #1e293b; /* slate-800 */
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #334155; /* slate-700 */
+    }
+</style>
+{% endblock %}
+
 {% block body %}
-<div class="bg-gray-50 min-h-[calc(100vh-3.5rem)] text-gray-900">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">Sandbox</h1>
-            <p class="text-gray-600">Free-form environment — write any code, test inputs, and check your code for errors</p>
-        </header>
+<main class="flex flex-col lg:flex-row w-full lg:h-[calc(100vh-64px)] overflow-hidden bg-slate-950">
+    <!-- Left Pane: Problem Statement Input -->
+    <div id="left-pane" class="w-full lg:w-[42%] flex flex-col h-full bg-slate-950 p-6 border-r border-slate-800/80">
+        <div class="flex-1 flex flex-col h-full space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span class="text-indigo-400">📝</span> Problem Statement
+                </h2>
+                <span class="text-xs text-slate-500">Paste or type your challenge prompt here</span>
+            </div>
+            <div class="flex-1 relative">
+                <textarea id="problemStatement" spellcheck="false"
+                          class="absolute inset-0 w-full h-full p-4 border border-slate-800 bg-slate-900/10 rounded-xl resize-none font-sans text-sm text-slate-300 placeholder-slate-600 focus:border-indigo-500 focus:outline-none transition"
+                          placeholder="Type or paste the problem description here..."></textarea>
+            </div>
+        </div>
+    </div>
 
-        <main class="space-y-8">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-4">
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Problem Statement</h2>
-                        <textarea id="problemStatement"
-                                  class="w-full h-48 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Enter your problem statement here..."></textarea>
-                    </section>
-                </div>
-
-                <div class="lg:col-span-8">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div>
-                            <section class="bg-white rounded-lg shadow-md p-6">
-                                <div class="flex justify-between items-center mb-4">
-                                    <div class="flex items-center space-x-3">
-                                        <h2 class="text-2xl font-semibold text-gray-800">My Code</h2>
-                                        <button type="button" onclick="resetCode()" class="text-xs text-red-600 hover:text-red-700 font-medium border border-red-200 hover:border-red-400 rounded px-2 py-0.5 transition">Reset Code</button>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <label for="languageSelect" class="text-sm font-medium text-gray-700">Language:</label>
-                                        <select id="languageSelect"
-                                                class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                                            <option value="python">Python</option>
-                                            <option value="java">Java</option>
-                                            <option value="c">C</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <textarea id="myCode"
-                                          class="w-full h-64 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                                          placeholder="Enter your code here..."></textarea>
-                                <div class="flex justify-center space-x-4 mt-4">
-                                    <button id="getHintBtn" type="button" onclick="getHints()"
-                                            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md">
-                                        Get Hint
-                                    </button>
-                                    <button id="runCodeBtn" type="button" onclick="runCode()"
-                                            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md">
-                                        Run Code
-                                    </button>
-                                </div>
-                            </section>
-                        </div>
-
-                        <div>
-                            <section class="bg-white rounded-lg shadow-md p-6">
-                                <h2 class="text-xl font-semibold text-gray-800 mb-4">Execution Output</h2>
-                                <div class="mb-4">
-                                    <label for="customInput" class="block text-sm font-medium text-gray-700 mb-2">Custom Input (optional):</label>
-                                    <textarea id="customInput"
-                                              class="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none font-mono text-sm focus:ring-2 focus:ring-blue-500"
-                                              placeholder="Enter input for your code"></textarea>
-                                </div>
-                                <div id="executionLoading" class="hidden py-8 text-center text-gray-600">Running code...</div>
-                                <div id="executionOutput" class="space-y-3">
-                                    <div id="stdout" class="hidden">
-                                        <h3 class="text-sm font-semibold text-gray-700 mb-1">Output:</h3>
-                                        <pre class="bg-gray-100 p-3 rounded text-sm font-mono max-h-96 overflow-auto"></pre>
-                                    </div>
-                                    <div id="stderr" class="hidden">
-                                        <h3 class="text-sm font-semibold text-red-700 mb-1">Error:</h3>
-                                        <pre class="bg-red-50 p-3 rounded text-sm font-mono text-red-800 max-h-96 overflow-auto"></pre>
-                                    </div>
-                                    <div id="compileOutput" class="hidden">
-                                        <h3 class="text-sm font-semibold text-orange-700 mb-1">Compilation:</h3>
-                                        <pre class="bg-orange-50 p-3 rounded text-sm font-mono text-orange-800 max-h-96 overflow-auto"></pre>
-                                    </div>
-                                    <div id="executionInfo" class="hidden text-xs text-gray-600 space-y-1">
-                                        <div>Time: <span id="execTime"></span></div>
-                                        <div>Memory: <span id="execMemory"></span></div>
-                                        <div>Exit Code: <span id="exitCode"></span></div>
-                                    </div>
-                                    <div id="emptyOutput" class="text-center py-8 text-gray-500 text-sm">Click "Run Code" to see execution results</div>
-                                </div>
-                            </section>
-                        </div>
-                    </div>
+    <!-- Right Pane: Code Editor (top) & Bottom Results Panel (bottom, scrollable in viewport) -->
+    <div id="right-pane" class="w-full lg:w-[58%] flex flex-col h-full overflow-y-auto bg-slate-950">
+        <!-- Top Section: Editor Window (Sized same as left column on desktop) -->
+        <div class="w-full h-[450px] lg:h-[calc(100vh-64px)] flex flex-col shrink-0 border-b border-slate-800/80 relative">
+            <!-- Editor Header / Controls -->
+            <div class="flex items-center justify-between border-b border-slate-800 bg-slate-900/40 px-4 py-2">
+                <span class="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                    Source Code
+                </span>
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="resetCode()" class="text-xs text-slate-400 hover:text-rose-400 transition">Reset Code</button>
+                    <select id="languageSelect"
+                            class="rounded-lg border border-slate-800 bg-slate-900 px-3 py-1 text-xs text-slate-300 focus:border-indigo-500 focus:outline-none">
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                        <option value="c">C</option>
+                    </select>
                 </div>
             </div>
 
+            <!-- Code Input Textarea -->
+            <div class="flex-1 relative bg-slate-950">
+                <textarea id="myCode" spellcheck="false"
+                          class="absolute inset-0 w-full h-full resize-none bg-slate-950/60 p-4 font-mono text-sm text-slate-200 focus:outline-none"
+                          placeholder="# Write your solution here..."></textarea>
+            </div>
+
+            <!-- Action buttons inside editor footer -->
+            <div class="border-t border-slate-800/60 bg-slate-900/30 px-4 py-3 flex justify-end gap-3">
+                <button id="getHintBtn" type="button" onclick="getHints(); scrollRightPaneDown();"
+                        class="rounded-lg border border-indigo-500/40 bg-indigo-500/10 hover:bg-indigo-500/20 px-5 py-2 text-xs font-semibold text-indigo-300 transition">
+                    Get Hint
+                </button>
+                <button id="runCodeBtn" type="button" onclick="runCode(); scrollRightPaneDown();"
+                        class="rounded-lg bg-green-600 hover:bg-green-500 px-5 py-2 text-xs font-semibold text-white transition">
+                    Run Code
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Section: Results, Output, & Hints (Visible by scrolling down) -->
+        <div id="results-panel" class="flex flex-col shrink-0 p-6 space-y-6 bg-slate-900/10 border-t border-slate-800">
+            <!-- Execution Output -->
+            <section class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 space-y-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <span>💻</span> Execution Output
+                </h3>
+
+                <!-- Custom Input -->
+                <div>
+                    <label for="customInput" class="block text-xs font-medium text-slate-400 mb-1.5">Custom Input (optional)</label>
+                    <textarea id="customInput" spellcheck="false"
+                              class="w-full h-20 p-3 border border-slate-800 bg-slate-950/60 rounded-lg resize-none font-mono text-xs text-slate-200 focus:border-indigo-500 focus:outline-none"
+                              placeholder="stdin for your code..."></textarea>
+                </div>
+
+                <!-- Runner Outputs -->
+                <div class="space-y-3">
+                    <div id="executionLoading" class="hidden py-6 text-center text-slate-400 text-sm">
+                        <div class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-indigo-500 border-t-transparent mr-2 align-middle"></div>
+                        Running code...
+                    </div>
+                    <div id="executionOutput" class="space-y-3">
+                        <div id="stdout" class="hidden">
+                            <span class="mb-1 block text-xs font-semibold text-slate-400">stdout</span>
+                            <pre class="rounded-lg border border-slate-800 bg-slate-950 p-3 font-mono text-xs text-slate-200 overflow-x-auto max-h-60 whitespace-pre-wrap"></pre>
+                        </div>
+                        <div id="stderr" class="hidden">
+                            <span class="mb-1 block text-xs font-semibold text-rose-400">stderr</span>
+                            <pre class="rounded-lg border border-rose-950/20 bg-rose-950/10 p-3 font-mono text-xs text-rose-200 overflow-x-auto max-h-60 whitespace-pre-wrap"></pre>
+                        </div>
+                        <div id="compileOutput" class="hidden">
+                            <span class="mb-1 block text-xs font-semibold text-amber-400">compile output</span>
+                            <pre class="rounded-lg border border-amber-950/20 bg-amber-950/10 p-3 font-mono text-xs text-amber-200 overflow-x-auto max-h-60 whitespace-pre-wrap"></pre>
+                        </div>
+                        <div id="executionInfo" class="hidden border-t border-slate-800/80 pt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
+                            <div>Time: <span id="execTime" class="font-semibold text-slate-200"></span></div>
+                            <div>Memory: <span id="execMemory" class="font-semibold text-slate-200"></span></div>
+                            <div>Exit Code: <span id="exitCode" class="font-semibold text-slate-200"></span></div>
+                        </div>
+                        <div id="emptyOutput" class="text-center py-6 text-slate-500 text-xs">
+                            Click "Run Code" to see execution results here
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Coach Hints -->
             <section id="correctSection" class="hidden">
-                <div class="bg-green-50 border-l-4 border-green-500 rounded-lg shadow-md p-8 text-center">
-                    <h2 class="text-2xl font-bold text-green-800 mb-2">Correct!</h2>
-                    <p id="correctMessage" class="text-green-700 text-lg"></p>
+                <div class="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
+                    <h2 class="text-xl font-bold text-emerald-300 mb-1">Correct!</h2>
+                    <p id="correctMessage" class="text-emerald-200 text-sm"></p>
                 </div>
             </section>
 
             <section id="hintsSection" class="space-y-4 hidden">
-                <h2 class="text-2xl font-semibold text-gray-800 text-center">Hints</h2>
-                <div class="grid md:grid-cols-3 gap-6">
-                    <div id="hint1Card" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500 hidden">
+                <div class="flex items-center gap-2 pb-2 border-b border-slate-800">
+                    <span class="text-lg">🎯</span>
+                    <h2 class="text-base font-bold text-white">AI Coach Hints</h2>
+                    <span class="text-xs text-slate-500">Progressive feedback</span>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <div id="hint1Card" class="rounded-xl border border-slate-800 bg-slate-900/80 p-5 border-l-4 border-l-sky-500 hidden">
                         <div class="flex items-center mb-3">
-                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mr-3">1</div>
-                            <h3 class="text-lg font-semibold text-gray-800">Getting Started</h3>
+                            <div class="w-7 h-7 bg-sky-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-xs">1</div>
+                            <h3 class="font-semibold text-white text-sm">Conceptual Hint</h3>
                         </div>
-                        <p id="hint1" class="text-gray-600 mb-4"></p>
-                        <button id="showHint2Btn" class="text-sm text-green-700 hidden" onclick="showHint(2)">Show Hint 2</button>
+                        <p id="hint1" class="text-slate-300 text-xs mb-3 leading-relaxed"></p>
+                        <button id="showHint2Btn" type="button" class="text-xs text-sky-400 hover:text-sky-300 hidden" onclick="showHint(2)">Unlock Hint 2 →</button>
                     </div>
-                    <div id="hint2Card" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500 hidden">
+                    <div id="hint2Card" class="rounded-xl border border-slate-800 bg-slate-900/80 p-5 border-l-4 border-l-amber-500 hidden">
                         <div class="flex items-center mb-3">
-                            <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold mr-3">2</div>
-                            <h3 class="text-lg font-semibold text-gray-800">Getting Closer</h3>
+                            <div class="w-7 h-7 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-xs">2</div>
+                            <h3 class="font-semibold text-white text-sm">Structural Hint</h3>
                         </div>
-                        <p id="hint2" class="text-gray-600 mb-4"></p>
-                        <button id="showHint3Btn" class="text-sm text-yellow-700 hidden" onclick="showHint(3)">Show Hint 3</button>
+                        <p id="hint2" class="text-slate-300 text-xs mb-3 leading-relaxed"></p>
+                        <button id="showHint3Btn" type="button" class="text-xs text-amber-400 hover:text-amber-300 hidden" onclick="showHint(3)">Unlock Hint 3 →</button>
                     </div>
-                    <div id="hint3Card" class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500 hidden">
+                    <div id="hint3Card" class="rounded-xl border border-slate-800 bg-slate-900/80 p-5 border-l-4 border-l-violet-500 hidden">
                         <div class="flex items-center mb-3">
-                            <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold mr-3">3</div>
-                            <h3 class="text-lg font-semibold text-gray-800">Almost There</h3>
+                            <div class="w-7 h-7 bg-violet-500 rounded-full flex items-center justify-center text-white font-bold mr-3 text-xs">3</div>
+                            <h3 class="font-semibold text-white text-sm">Solution-revealing Hint</h3>
                         </div>
-                        <p id="hint3" class="text-gray-600 mb-4"></p>
-                        <button id="showSolutionBtn" class="text-sm text-red-700 hidden" onclick="showSolution()">Show solution</button>
+                        <p id="hint3" class="text-slate-300 text-xs mb-3 leading-relaxed"></p>
+                        <button id="showSolutionBtn" type="button" class="text-xs text-violet-400 hover:text-violet-300 hidden" onclick="showSolution()">Reveal Complete Solution →</button>
                     </div>
                 </div>
-                <div id="solutionSection" class="hidden bg-gray-900 rounded-lg shadow-md p-6 border-l-4 border-purple-500">
-                    <h3 class="text-lg font-semibold text-white mb-3">Complete Solution</h3>
-                    <pre id="solutionCode" class="text-gray-300 font-mono text-sm overflow-x-auto whitespace-pre-wrap"></pre>
+                <div id="solutionSection" class="hidden rounded-xl border border-slate-800 bg-slate-950 p-5 border-l-4 border-l-emerald-500">
+                    <h3 class="text-sm font-semibold text-white mb-2">Complete Solution</h3>
+                    <pre id="solutionCode" class="text-slate-300 font-mono text-xs overflow-x-auto whitespace-pre-wrap bg-slate-900/50 p-3 rounded-lg"></pre>
                 </div>
             </section>
-        </main>
+        </div>
     </div>
-</div>
+</main>
 
 {% include "partials/workspace_scripts.html" %}
 <script>
+    // Reset code helper
     function resetCode() {
         if (confirm("Are you sure you want to reset your code? This will clear all your current edits.")) {
             document.getElementById('myCode').value = '';
         }
     }
+
+    // Auto-scroll helper when code is run or hints are requested
+    function scrollRightPaneDown() {
+        setTimeout(() => {
+            document.getElementById('right-pane').scrollTo({
+                top: document.getElementById('right-pane').scrollHeight,
+                behavior: 'smooth'
+            });
+        }, 100);
+    }
+
+    // Split.js initialization with responsive handling
+    let splitInstance = null;
+
+    function initSplit() {
+        if (window.innerWidth >= 1024) {
+            if (!splitInstance) {
+                splitInstance = Split(['#left-pane', '#right-pane'], {
+                    sizes: [42, 58],
+                    minSize: [320, 450],
+                    gutterSize: 6,
+                    cursor: 'col-resize'
+                });
+            }
+        } else {
+            if (splitInstance) {
+                splitInstance.destroy();
+                splitInstance = null;
+            }
+            document.getElementById('left-pane').style.width = '';
+            document.getElementById('right-pane').style.width = '';
+        }
+    }
+
+    window.addEventListener('resize', initSplit);
+    document.addEventListener('DOMContentLoaded', initSplit);
 </script>
 {% endblock %}
