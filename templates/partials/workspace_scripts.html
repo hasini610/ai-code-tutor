@@ -39,16 +39,56 @@
                 if (data.status === 'correct') {
                     showCorrectCodeMessage(data.message);
                 } else if (data.hint1) {
-                    storedHints = { hint1: data.hint1, hint2: data.hint2, hint3: data.hint3 };
                     storedSolution = data.solution || '# Solution not available';
-                    document.getElementById('hint1').textContent = storedHints.hint1;
-                    document.getElementById('hint2').textContent = storedHints.hint2;
-                    document.getElementById('hint3').textContent = storedHints.hint3;
-                    document.getElementById('solutionCode').textContent = storedSolution;
-                    hintsSection.classList.remove('hidden');
-                    hintsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    document.getElementById('hint1Card').classList.remove('hidden');
-                    document.getElementById('showHint2Btn').classList.remove('hidden');
+                    
+                    const chatContainer = document.getElementById('chat-container');
+                    if (chatContainer) {
+                        hintsSection.classList.remove('hidden');
+                        
+                        // Add User message
+                        const userMsg = document.createElement('div');
+                        userMsg.className = 'flex gap-3 flex-row-reverse';
+                        userMsg.innerHTML = `
+                            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0 text-white font-bold text-xs">U</div>
+                            <div class="bg-indigo-600 text-white rounded-2xl rounded-tr-sm p-3 text-sm shadow-sm">I'm stuck. Can I get a hint?</div>
+                        `;
+                        chatContainer.appendChild(userMsg);
+
+                        // Add AI message
+                        const aiMsg = document.createElement('div');
+                        aiMsg.className = 'flex gap-3 mt-4 mb-2';
+                        
+                        const aiContent = `
+                            <div class="space-y-3">
+                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+                                    <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider block mb-1">Hint 1: Conceptual</span>
+                                    <p class="text-slate-300">${data.hint1}</p>
+                                </div>
+                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+                                    <span class="text-xs font-bold text-purple-400 uppercase tracking-wider block mb-1">Hint 2: Structural</span>
+                                    <p class="text-slate-300">${data.hint2}</p>
+                                </div>
+                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+                                    <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-1">Hint 3: Specifics</span>
+                                    <p class="text-slate-300">${data.hint3}</p>
+                                </div>
+                                <button onclick="showSolution()" class="text-xs text-emerald-400 hover:text-emerald-300 mt-2">Reveal Complete Solution →</button>
+                            </div>
+                        `;
+
+                        aiMsg.innerHTML = `
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-lg">AI</div>
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-sm p-4 text-sm text-slate-300 shadow-sm leading-relaxed flex-1">
+                                ${aiContent}
+                            </div>
+                        `;
+                        chatContainer.appendChild(aiMsg);
+                        
+                        document.getElementById('solutionCode').textContent = storedSolution;
+                        
+                        hintsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        chatContainer.lastElementChild.scrollIntoView({ behavior: 'smooth' });
+                    }
                 } else {
                     alert(data.error || 'Unexpected response from server. Please try again.');
                 }
@@ -151,18 +191,7 @@
     }
 
     function showHint(hintNumber) {
-        if (hintNumber === 2) {
-            document.getElementById('hint2Card').classList.remove('hidden');
-            document.getElementById('showHint2Btn').classList.add('hidden');
-            document.getElementById('showHint3Btn').classList.remove('hidden');
-            document.getElementById('hint2Card').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else if (hintNumber === 3) {
-            document.getElementById('hint3Card').classList.remove('hidden');
-            document.getElementById('showHint3Btn').classList.add('hidden');
-            const showSolutionBtn = document.getElementById('showSolutionBtn');
-            if (showSolutionBtn) showSolutionBtn.classList.remove('hidden');
-            document.getElementById('hint3Card').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        // Obsolete in chat UI
     }
 
     function showSolution() {
@@ -183,18 +212,18 @@
     }
 
     function clearPreviousHints() {
-        document.getElementById('correctSection').classList.add('hidden');
-        document.getElementById('hintsSection').classList.add('hidden');
-        document.getElementById('hint1Card').classList.add('hidden');
-        document.getElementById('hint2Card').classList.add('hidden');
-        document.getElementById('hint3Card').classList.add('hidden');
-        document.getElementById('showHint2Btn').classList.add('hidden');
-        document.getElementById('showHint3Btn').classList.add('hidden');
-        const showSolutionBtn = document.getElementById('showSolutionBtn');
+        const correctSection = document.getElementById('correctSection');
+        if (correctSection) correctSection.classList.add('hidden');
+        
+        const hintsSection = document.getElementById('hintsSection');
+        if (hintsSection) hintsSection.classList.add('hidden');
+        
         const solutionSection = document.getElementById('solutionSection');
-        if (showSolutionBtn) showSolutionBtn.classList.add('hidden');
         if (solutionSection) solutionSection.classList.add('hidden');
-        storedHints = {};
+        
+        const chatContainer = document.getElementById('chat-container');
+        if (chatContainer) chatContainer.innerHTML = '';
+        
         storedSolution = '';
     }
 </script>

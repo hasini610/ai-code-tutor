@@ -42,12 +42,14 @@
 
 {% block body %}
 <main class="flex flex-col lg:flex-row w-full lg:h-[calc(100vh-64px)] overflow-hidden bg-slate-950">
+
+
     <!-- Left Pane: Problem Details & AI Coach Section -->
-    <div id="left-pane" class="w-full lg:w-[42%] flex flex-col h-full overflow-y-auto border-r border-slate-800 bg-slate-950 p-6">
+    <div id="panel-problem" class="w-full lg:w-[40%] flex flex-col h-full overflow-y-auto border-r border-slate-800 bg-slate-950 p-6">
         <div class="space-y-6">
             <!-- Breadcrumbs / Back button -->
             <div class="flex items-center gap-3">
-                <a href="{{ url_for('dashboard') }}" class="text-sm text-slate-400 hover:text-indigo-300 transition">← All challenges</a>
+                <a href="{{ url_for('problems_list') }}" class="text-sm text-slate-400 hover:text-indigo-300 transition">← All challenges</a>
                 {% if problem.difficulty == 'Easy' %}
                 <span class="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3 py-0.5 text-xs font-semibold uppercase text-emerald-400">Easy</span>
                 {% else %}
@@ -66,21 +68,30 @@
 
             <!-- AI Coach Section (embedded in Left Column) -->
             <div class="border-t border-slate-800 pt-6">
-                {% include "partials/coach_hints_section.html" %}
-                <!-- Ask AI Coach Button (visible when submission results exist or is prepared) -->
-                <div id="coachButtonContainer" class="mt-4">
+                <!-- NEW Chat UI Container -->
+                <div id="chat-container" class="space-y-4 mb-4">
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-lg">AI</div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-sm p-3 text-sm text-slate-300 shadow-sm leading-relaxed">
+                            Hello! I'm your AI Debugging Tutor. If you get stuck, run your code against the test cases and click the button below. I will guide you without giving away the answer.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ask AI Coach Button -->
+                <div id="coachButtonContainer" class="mt-4 sticky bottom-0 bg-slate-950 pt-2 pb-4 border-t border-slate-800/50">
                     <button id="askCoachBtn" type="button" onclick="askAiCoach()"
-                            class="w-full rounded-xl border border-indigo-500/50 bg-gradient-to-r from-indigo-600/90 to-violet-600/90 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-900/40 transition hover:from-indigo-500 hover:to-violet-500">
-                        Ask AI Coach for a Hint
+                            class="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-900/40 transition hover:scale-[1.02]">
+                        Ask AI for Guidance
                     </button>
-                    <p id="coachHelperText" class="mt-2 text-xs text-slate-500 text-center">Submit your code first so the coach can see which tests failed.</p>
+                    <p id="coachHelperText" class="mt-2 text-xs text-slate-500 text-center">Submit your code first so the coach can analyze it.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Right Pane: Code Editor (top) & Bottom Results Panel (bottom, scrollable in viewport) -->
-    <div id="right-pane" class="w-full lg:w-[58%] flex flex-col h-full overflow-y-auto bg-slate-950">
+    <div id="panel-editor" class="w-full lg:w-[60%] flex flex-col h-full overflow-y-auto bg-slate-950">
         <!-- Top Section: Editor Window (Sized same as left column on desktop) -->
         <div class="w-full h-[450px] lg:h-[calc(100vh-64px)] flex flex-col shrink-0 border-b border-slate-800/80 relative">
             <!-- Editor Header / Controls -->
@@ -312,8 +323,8 @@
         // Auto-scroll the right pane down to completely expose the results panel when needed
         if (tabName === 'results' || tabName === 'custominput') {
             setTimeout(() => {
-                document.getElementById('right-pane').scrollTo({
-                    top: document.getElementById('right-pane').scrollHeight,
+                document.getElementById('panel-editor').scrollTo({
+                    top: document.getElementById('panel-editor').scrollHeight,
                     behavior: 'smooth'
                 });
             }, 50);
@@ -352,9 +363,9 @@
     function initSplit() {
         if (window.innerWidth >= 1024) {
             if (!splitInstance) {
-                splitInstance = Split(['#left-pane', '#right-pane'], {
-                    sizes: [42, 58],
-                    minSize: [320, 450],
+                splitInstance = Split(['#panel-problem', '#panel-editor'], {
+                    sizes: [40, 60],
+                    minSize: [300, 400],
                     gutterSize: 6,
                     cursor: 'col-resize'
                 });
@@ -364,8 +375,8 @@
                 splitInstance.destroy();
                 splitInstance = null;
             }
-            document.getElementById('left-pane').style.width = '';
-            document.getElementById('right-pane').style.width = '';
+            document.getElementById('panel-problem').style.width = '';
+            document.getElementById('panel-editor').style.width = '';
         }
     }
 
@@ -524,32 +535,55 @@
         return div.innerHTML;
     }
 
-    function clearCoachHints() {
-        document.getElementById('correctSection').classList.add('hidden');
-        document.getElementById('hintsSection').classList.add('hidden');
-        document.getElementById('hint1Card').classList.add('hidden');
-        document.getElementById('hint2Card').classList.add('hidden');
-        document.getElementById('hint3Card').classList.add('hidden');
-        document.getElementById('showHint2Btn').classList.add('hidden');
-        document.getElementById('showHint3Btn').classList.add('hidden');
-    }
-
     // Function to handle AI Coach Hint display
     function displayCoachHints(data) {
-        clearCoachHints();
+        const chatContainer = document.getElementById('chat-container');
+        
+        // Add User message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'flex gap-3 flex-row-reverse';
+        userMsg.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0 text-white font-bold text-xs">U</div>
+            <div class="bg-indigo-600 text-white rounded-2xl rounded-tr-sm p-3 text-sm shadow-sm">Help me debug my code.</div>
+        `;
+        chatContainer.appendChild(userMsg);
+
+        // Add AI message
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'flex gap-3 mt-4 mb-2';
+        
+        let aiContent = '';
         if (data.status === 'correct') {
-            document.getElementById('correctMessage').textContent = data.message || 'Your solution looks good!';
-            document.getElementById('correctSection').classList.remove('hidden');
-            document.getElementById('correctSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            return;
+            aiContent = `<div class="font-semibold text-emerald-400 mb-1">Great job!</div><p>${data.message || 'Your solution is correct!'}</p>`;
+        } else {
+            aiContent = `
+                <div class="space-y-3">
+                    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+                        <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider block mb-1">Hint 1: Conceptual</span>
+                        <p class="text-slate-300">${data.hint1}</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+                        <span class="text-xs font-bold text-purple-400 uppercase tracking-wider block mb-1">Hint 2: Structural</span>
+                        <p class="text-slate-300">${data.hint2}</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-1">Hint 3: Specifics</span>
+                        <p class="text-slate-300">${data.hint3}</p>
+                    </div>
+                </div>
+            `;
         }
-        document.getElementById('hint1').textContent = data.hint1;
-        document.getElementById('hint2').textContent = data.hint2;
-        document.getElementById('hint3').textContent = data.hint3;
-        document.getElementById('hintsSection').classList.remove('hidden');
-        document.getElementById('hint1Card').classList.remove('hidden');
-        document.getElementById('showHint2Btn').classList.remove('hidden');
-        document.getElementById('hintsSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        aiMsg.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-lg">AI</div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-sm p-4 text-sm text-slate-300 shadow-sm leading-relaxed flex-1">
+                ${aiContent}
+            </div>
+        `;
+        chatContainer.appendChild(aiMsg);
+        
+        // Scroll down
+        chatContainer.lastElementChild.scrollIntoView({ behavior: 'smooth' });
     }
 
     async function askAiCoach() {
@@ -580,7 +614,7 @@
         coachBtn.disabled = true;
         coachBtn.textContent = 'Coach is thinking…';
         coachBtn.classList.add('opacity-75', 'cursor-not-allowed');
-        clearCoachHints();
+        
 
         try {
             const response = await fetch(`/api/problems/${PROBLEM_ID}/coach`, {
