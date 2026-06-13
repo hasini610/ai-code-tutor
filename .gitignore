@@ -3,3 +3,6 @@ judge0-v1.13.1/
 __pycache__/
 *.pyc
 .env
+*.zip
+*.csv
+leetcode_dataset - lc.csv/
