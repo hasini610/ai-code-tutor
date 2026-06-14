@@ -291,15 +291,40 @@
             indentUnit: 4,
             tabSize: 4,
             lineWrapping: true,
-            autoCloseBrackets: true,
+            autoCloseBrackets: {
+                pairs: '()[]{}\'\'""',
+                closeBefore: ')]}\'";:,',
+                triples: '',
+                explode: '[]{}'
+            },
             matchBrackets: true,
             viewportMargin: Infinity,
             extraKeys: {
                 "Tab": function(cm) {
-                    var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
-                    cm.replaceSelection(spaces);
+                    if (cm.somethingSelected()) {
+                        cm.indentSelection('add');
+                    } else {
+                        cm.replaceSelection(Array(cm.getOption('indentUnit') + 1).join(' '));
+                    }
                 },
-                "Enter": "newlineAndIndent"
+                "Shift-Tab": function(cm) { cm.indentSelection('subtract'); },
+                "Enter": function(cm) {
+                    const cursor = cm.getCursor();
+                    const line = cm.getLine(cursor.line);
+                    const charBefore = line[cursor.ch - 1];
+                    const charAfter = line[cursor.ch];
+                    if ((charBefore === '{' && charAfter === '}') ||
+                        (charBefore === '(' && charAfter === ')') ||
+                        (charBefore === '[' && charAfter === ']')) {
+                        const indent = cm.getOption('indentUnit');
+                        const spaces = Array(indent + 1).join(' ');
+                        const currentIndent = line.match(/^\s*/)[0];
+                        cm.replaceSelection('\n' + currentIndent + spaces + '\n' + currentIndent, 'end');
+                        cm.setCursor({ line: cursor.line + 1, ch: currentIndent.length + indent });
+                    } else {
+                        cm.execCommand('newlineAndIndentContinueComment');
+                    }
+                }
             }
         });
 
@@ -329,7 +354,7 @@
                         const mark = cm.markText(
                             { line: lineNum, ch: ch },
                             { line: lineNum, ch: ch + 1 },
-                            { className: `cm-rainbow-${colorIndex} font-bold` }
+                            { className: `cm-rainbow-${colorIndex}` }
                         );
                         bracketMarks.push(mark);
                         depth++;
@@ -339,7 +364,7 @@
                         const mark = cm.markText(
                             { line: lineNum, ch: ch },
                             { line: lineNum, ch: ch + 1 },
-                            { className: `cm-rainbow-${colorIndex} font-bold` }
+                            { className: `cm-rainbow-${colorIndex}` }
                         );
                         bracketMarks.push(mark);
                     }

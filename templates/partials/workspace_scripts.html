@@ -184,16 +184,15 @@
                 if (data.status === 'correct') {
                     showCorrectCodeMessage(data.message);
                 } else if (data.hint1) {
+                    // Store all hints but only reveal hint 1
                     storedHints = { hint1: data.hint1, hint2: data.hint2, hint3: data.hint3 };
-                    storedSolution = data.solution || '# Solution not available';
                     document.getElementById('hint1').textContent = storedHints.hint1;
-                    document.getElementById('hint2').textContent = storedHints.hint2;
-                    document.getElementById('hint3').textContent = storedHints.hint3;
-                    document.getElementById('solutionCode').textContent = storedSolution;
                     hintsSection.classList.remove('hidden');
-                    hintsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    document.getElementById('hint1Card').classList.remove('hidden');
-                    document.getElementById('showHint2Btn').classList.remove('hidden');
+                    const h1Card = document.getElementById('hint1Card');
+                    if (h1Card) h1Card.classList.remove('hidden');
+                    const btn2 = document.getElementById('showHint2Btn');
+                    if (btn2) btn2.classList.remove('hidden');
+                    hintsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 } else {
                     alert(data.error || 'Unexpected response from server. Please try again.');
                 }
@@ -307,6 +306,9 @@
         if (hintNumber === 2) {
             const card2 = document.getElementById('hint2Card');
             if (card2) {
+                if (storedHints && storedHints.hint2) {
+                    document.getElementById('hint2').textContent = storedHints.hint2;
+                }
                 card2.classList.remove('hidden');
                 const btn2 = document.getElementById('showHint2Btn');
                 if (btn2) btn2.classList.add('hidden');
@@ -317,6 +319,9 @@
         } else if (hintNumber === 3) {
             const card3 = document.getElementById('hint3Card');
             if (card3) {
+                if (storedHints && storedHints.hint3) {
+                    document.getElementById('hint3').textContent = storedHints.hint3;
+                }
                 card3.classList.remove('hidden');
                 const btn3 = document.getElementById('showHint3Btn');
                 if (btn3) btn3.classList.add('hidden');
