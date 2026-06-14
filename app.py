@@ -9,6 +9,7 @@ import re
 import html
 import requests
 import json
+import time
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import datetime, timezone# Load environment variables from .env file
@@ -514,10 +515,223 @@ def evaluate_test_case(source_code: str, language: str, test_case: dict, index: 
     }
 
 
+def execute_code_batch(submissions_list, language='python'):
+    """Execute multiple code submissions in a batch using local Judge0 API."""
+    try:
+        language_id = JUDGE0_LANGUAGE_IDS.get(language, JUDGE0_LANGUAGE_IDS['python'])
+        submissions = []
+        for item in submissions_list:
+            stdin = item.get('stdin') or ''
+            # Ensure stdin ends with a newline so C scanf loops terminate correctly
+            if stdin and not stdin.endswith('\n'):
+                stdin = f"{stdin}\n"
+            submissions.append({
+                'source_code': item['source_code'],
+                'language_id': language_id,
+                'stdin': stdin
+            })
+            
+        url = f'{JUDGE0_URL}/submissions/batch?base64_encoded=false'
+        print(f'Judge0 batch request: language={language} (id={language_id}), count={len(submissions)}')
+        
+        response = requests.post(url, json={'submissions': submissions}, timeout=60)
+        print(f'Judge0 batch response status: {response.status_code}')
+        
+        if response.status_code != 201 and response.status_code != 200:
+            err_msg = f'Judge0 batch API error: {response.status_code}'
+            return [{'error': err_msg, 'stdout': '', 'stderr': response.text, 'compile_output': '', 'status': 'Error'} for _ in submissions_list]
+            
+        submission_tokens = response.json()
+        tokens = [s.get('token') for s in submission_tokens if s.get('token')]
+        
+        if len(tokens) != len(submissions_list):
+            err_msg = 'Judge0 batch API returned mismatching number of tokens.'
+            return [{'error': err_msg, 'stdout': '', 'stderr': '', 'compile_output': '', 'status': 'Error'} for _ in submissions_list]
+            
+        # Poll batch
+        tokens_str = ','.join(tokens)
+        poll_url = f'{JUDGE0_URL}/submissions/batch?tokens={tokens_str}&base64_encoded=false'
+        
+        max_attempts = 30
+        subs_results = []
+        all_done = False
+        
+        for attempt in range(max_attempts):
+            poll_resp = requests.get(poll_url, timeout=30)
+            if poll_resp.status_code != 200:
+                time.sleep(0.5)
+                continue
+                
+            poll_data = poll_resp.json()
+            subs_results = poll_data.get('submissions', [])
+            
+            # Check if all completed (status_id > 2)
+            all_done = True
+            for sub in subs_results:
+                status_id = sub.get('status', {}).get('id')
+                if status_id is None or status_id <= 2:
+                    all_done = False
+                    break
+            
+            if all_done:
+                break
+                
+            time.sleep(0.5)
+            
+        formatted_results = []
+        for i, sub in enumerate(subs_results if all_done else []):
+            stdout = sub.get('stdout') or ''
+            stderr = sub.get('stderr') or ''
+            compile_output = sub.get('compile_output') or ''
+            status_info = sub.get('status') or {}
+            status_id = status_info.get('id')
+            status_desc = status_info.get('description', 'Unknown')
+            
+            formatted_results.append({
+                'stdout': stdout,
+                'stderr': stderr,
+                'compile_output': compile_output,
+                'time': sub.get('time', ''),
+                'memory': sub.get('memory', ''),
+                'exit_code': sub.get('exit_code', ''),
+                'status_id': status_id,
+                'status': status_desc,
+                'error': None if status_id == 3 else status_desc,
+            })
+            
+        # Fallback if any results are missing
+        while len(formatted_results) < len(submissions_list):
+            formatted_results.append({
+                'error': 'Execution timeout / incomplete',
+                'stdout': '',
+                'stderr': '',
+                'compile_output': '',
+                'status': 'Timeout',
+            })
+            
+        return formatted_results
+        
+    except requests.exceptions.Timeout:
+        return [{'error': 'Code execution timeout', 'stdout': '', 'stderr': '', 'compile_output': ''} for _ in submissions_list]
+    except requests.exceptions.ConnectionError:
+        return [{
+            'error': 'Cannot connect to Judge0. Make sure Docker is running (docker compose up in judge0-v1.13.1).',
+            'stdout': '',
+            'stderr': '',
+            'compile_output': '',
+        } for _ in submissions_list]
+    except Exception as e:
+        return [{'error': f'Execution error: {str(e)}', 'stdout': '', 'stderr': '', 'compile_output': ''} for _ in submissions_list]
+
+
 def run_test_suite(source_code: str, language: str, test_cases: list) -> dict:
-    results = []
-    for i, test_case in enumerate(test_cases, start=1):
-        results.append(evaluate_test_case(source_code, language, test_case, i))
+    results = [None] * len(test_cases)
+    active_indices = []
+    active_submissions = []
+
+    for i, test_case in enumerate(test_cases):
+        index = i + 1
+        label = f'Test Case {index}'
+        stdin = test_case.get('input') or ''
+        expected = clean_output(test_case.get('expected_output'))
+
+        if not is_test_case_configured(test_case):
+            results[i] = {
+                'index': index,
+                'label': label,
+                'passed': None,
+                'status': 'skipped',
+                'message': 'Not configured yet (empty input and expected output).',
+                'expected': '',
+                'actual': '',
+                'stdin': stdin,
+            }
+        else:
+            active_indices.append(i)
+            active_submissions.append({
+                'source_code': source_code,
+                'stdin': stdin
+            })
+
+    if active_submissions:
+        executions = execute_code_batch(active_submissions, language)
+        
+        for idx_in_active, orig_idx in enumerate(active_indices):
+            execution = executions[idx_in_active]
+            test_case = test_cases[orig_idx]
+            index = orig_idx + 1
+            label = f'Test Case {index}'
+            stdin = test_case.get('input') or ''
+            expected = clean_output(test_case.get('expected_output'))
+            
+            actual = clean_output(execution.get('stdout'))
+            status_id = execution.get('status_id')
+            status_desc = execution.get('status') or ''
+            
+            friendly_msg = ''
+            if status_id == 5:
+                friendly_msg = 'Time Limit Exceeded'
+            elif status_id == 6:
+                friendly_msg = 'Memory Limit Exceeded'
+            elif status_id == 7:
+                friendly_msg = 'Runtime Error'
+                if execution.get('stderr'):
+                    friendly_msg += f": {extract_first_line(execution.get('stderr'))}"
+                elif execution.get('error'):
+                    friendly_msg += f": {extract_first_line(execution.get('error'))}"
+            elif status_id and status_id != JUDGE0_ACCEPTED_STATUS_ID:
+                friendly_msg = status_desc or 'Execution failed'
+
+            if execution.get('error') and status_id != JUDGE0_ACCEPTED_STATUS_ID:
+                detail = execution.get('compile_output') or execution.get('stderr') or execution.get('error') or 'Execution failed'
+                results[orig_idx] = {
+                    'index': index,
+                    'label': label,
+                    'passed': False,
+                    'status': 'error',
+                    'message': friendly_msg or str(detail).strip()[:500],
+                    'expected': expected,
+                    'actual': actual,
+                    'stdin': stdin,
+                }
+                continue
+
+            if status_id != JUDGE0_ACCEPTED_STATUS_ID:
+                detail = execution.get('stderr') or execution.get('status') or 'Program did not complete successfully'
+                results[orig_idx] = {
+                    'index': index,
+                    'label': label,
+                    'passed': False,
+                    'status': 'error',
+                    'message': friendly_msg or str(detail).strip()[:500],
+                    'expected': expected,
+                    'actual': actual,
+                    'stdin': stdin,
+                }
+                continue
+
+            if outputs_match(actual, expected):
+                results[orig_idx] = {
+                    'index': index,
+                    'label': label,
+                    'passed': True,
+                    'status': 'passed',
+                    'message': 'Passed',
+                    'expected': expected,
+                    'actual': actual,
+                    'stdin': stdin,
+                }
+            else:
+                results[orig_idx] = {
+                    'index': index,
+                    'label': label,
+                    'passed': False,
+                    'status': 'failed',
+                    'message': f'Failed — Expected {expected!r} but got {actual!r}',
+                    'expected': expected,
+                    'actual': actual,
+                    'stdin': stdin,
+                }
 
     runnable = [r for r in results if r['status'] != 'skipped']
     passed_count = sum(1 for r in runnable if r['passed'] is True)
