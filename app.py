@@ -11,8 +11,7 @@ import requests
 import json
 from pathlib import Path
 from dotenv import load_dotenv
-
-# Load environment variables from .env file
+from datetime import datetime, timezone# Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
@@ -35,6 +34,15 @@ class SolvedProblem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     problem_id = db.Column(db.Integer, nullable=False)
+
+class Submission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    problem_id = db.Column(db.Integer, nullable=False)
+    code = db.Column(db.Text, nullable=False)
+    language = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(50), nullable=False)  # 'passed', 'partial', 'failed'
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -573,19 +581,79 @@ def problems_list():
     problems = data.get('problems', [])
     counts = data.get('counts_by_difficulty', {})
     
-    solved_ids = set()
+    problem_statuses = {}
     if current_user.is_authenticated:
+        submissions = Submission.query.filter_by(user_id=current_user.id).all()
+        for sub in submissions:
+            pid = sub.problem_id
+            # Priority: passed > partial > failed > In Progress
+            current_status = problem_statuses.get(pid, 'failed')
+            if sub.status == 'passed' or current_status == 'passed':
+                problem_statuses[pid] = 'passed'
+            elif sub.status == 'partial' or current_status == 'partial':
+                problem_statuses[pid] = 'partial'
+            else:
+                problem_statuses[pid] = 'failed'
+                
+        # Fallback to older SolvedProblem if Submission isn't populated
         solved_records = SolvedProblem.query.filter_by(user_id=current_user.id).all()
-        solved_ids = {r.problem_id for r in solved_records}
+        for r in solved_records:
+            problem_statuses[r.problem_id] = 'passed'
         
     return render_template(
         'dashboard.html',
         problems=problems,
         easy_count=counts.get('Easy', 0),
         medium_count=counts.get('Medium', 0),
-        solved_ids=solved_ids
+        problem_statuses=problem_statuses
     )
 
+@app.route('/problems/next-unsolved')
+@login_required
+def next_unsolved():
+    current_pid = request.args.get('current', type=int)
+    data = load_problems_dataset()
+    problems = data.get('problems', [])
+    if not problems:
+        return redirect(url_for('problems_list'))
+        
+    problem_ids = [p['id'] for p in problems]
+    
+    # Get solved problems
+    solved_pids = set()
+    subs = Submission.query.filter_by(user_id=current_user.id, status='passed').all()
+    for s in subs:
+        solved_pids.add(s.problem_id)
+    # Fallback to old SolvedProblem table
+    solved_records = SolvedProblem.query.filter_by(user_id=current_user.id).all()
+    for r in solved_records:
+        solved_pids.add(r.problem_id)
+        
+    # Find next unsolved
+    next_pid = None
+    if current_pid:
+        try:
+            idx = problem_ids.index(current_pid)
+            # check remaining
+            for pid in problem_ids[idx+1:]:
+                if pid not in solved_pids:
+                    next_pid = pid
+                    break
+        except ValueError:
+            pass
+            
+    # If not found after current, wrap around
+    if not next_pid:
+        for pid in problem_ids:
+            if pid not in solved_pids and pid != current_pid:
+                next_pid = pid
+                break
+                
+    if next_pid:
+        return redirect(url_for('problem', problem_id=next_pid))
+    else:
+        flash("You've solved all problems!", "info")
+        return redirect(url_for('problems_list'))
 
 @app.route('/sandbox')
 def sandbox():
@@ -601,7 +669,20 @@ def problem(problem_id: int):
     problem_view['description_html'] = format_problem_description(
         record.get('description', '')
     )
-    return render_template('problem.html', problem=problem_view)
+    
+    user_submissions = []
+    if current_user.is_authenticated:
+        subs = Submission.query.filter_by(user_id=current_user.id, problem_id=problem_id).order_by(Submission.timestamp.desc()).all()
+        for s in subs:
+            user_submissions.append({
+                'id': s.id,
+                'code': s.code,
+                'language': s.language,
+                'status': s.status,
+                'timestamp': s.timestamp.strftime('%b %d, %H:%M')
+            })
+
+    return render_template('problem.html', problem=problem_view, user_submissions=user_submissions)
 
 @app.route('/api/problems/<int:problem_id>/submit', methods=['POST'])
 def submit_problem(problem_id: int):
@@ -632,12 +713,33 @@ def submit_problem(problem_id: int):
             'results': summary['results'],
         }), 400
 
-    if summary['all_passed'] and current_user.is_authenticated:
-        solved = SolvedProblem.query.filter_by(user_id=current_user.id, problem_id=problem_id).first()
-        if not solved:
-            new_solved = SolvedProblem(user_id=current_user.id, problem_id=problem_id)
-            db.session.add(new_solved)
-            db.session.commit()
+    save_submission = data.get('save_submission', True)
+
+    if current_user.is_authenticated and save_submission:
+        if summary['all_passed']:
+            status_val = 'passed'
+        elif summary['passed'] > 0:
+            status_val = 'partial'
+        else:
+            status_val = 'failed'
+            
+        new_submission = Submission(
+            user_id=current_user.id,
+            problem_id=problem_id,
+            code=source_code,
+            language=language,
+            status=status_val
+        )
+        db.session.add(new_submission)
+        
+        # Keep old table synced for passed tests
+        if status_val == 'passed':
+            solved = SolvedProblem.query.filter_by(user_id=current_user.id, problem_id=problem_id).first()
+            if not solved:
+                new_solved = SolvedProblem(user_id=current_user.id, problem_id=problem_id)
+                db.session.add(new_solved)
+                
+        db.session.commit()
 
     return jsonify({
         'problem_id': problem_id,

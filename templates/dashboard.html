@@ -10,36 +10,50 @@
         <p class="mt-3 max-w-2xl text-slate-400">
             Pick a challenge to solve with progressive AI coaching and Judge0 execution, or open the Sandbox to run code and check errors in your own solutions.
         </p>
-        <div class="mt-4 flex flex-wrap gap-3 text-sm">
-            <span class="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-emerald-300">{{ easy_count }} Easy</span>
-            <span class="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-amber-300">{{ medium_count }} Medium</span>
-            <span class="rounded-full border border-slate-700 bg-slate-800/50 px-3 py-1 text-slate-400">{{ problems|length }} total</span>
+        <div class="mt-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div class="flex flex-wrap gap-3 text-sm">
+                <span class="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-emerald-300">{{ easy_count }} Easy</span>
+                <span class="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-amber-300">{{ medium_count }} Medium</span>
+                <span class="rounded-full border border-slate-700 bg-slate-800/50 px-3 py-1 text-slate-400">{{ problems|length }} total</span>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <div class="relative w-full sm:w-64">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-slate-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                        </svg>
+                    </div>
+                    <input type="text" id="searchInput" class="bg-slate-800/50 border border-slate-700 text-slate-200 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5 transition" placeholder="Search problems...">
+                </div>
+                
+                <select id="difficultyFilter" class="bg-slate-800/50 border border-slate-700 text-slate-200 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:w-auto p-2.5 transition">
+                    <option value="All">All Difficulties</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                </select>
+            </div>
         </div>
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 shadow-2xl shadow-black/40">
         <div class="overflow-x-auto">
-            <table class="w-full min-w-[640px] text-left text-sm">
+            <table class="w-full min-w-[640px] text-left text-sm" id="challengesTable">
                 <thead>
                     <tr class="border-b border-slate-800 bg-slate-900/80">
                         <th class="px-6 py-4 font-semibold text-slate-300">#</th>
                         <th class="px-6 py-4 font-semibold text-slate-300">Title</th>
                         <th class="px-6 py-4 font-semibold text-slate-300">Difficulty</th>
+                        <th class="px-6 py-4 font-semibold text-slate-300">Status</th>
                         <th class="px-6 py-4 text-right font-semibold text-slate-300">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/80">
                     {% for problem in problems %}
-                    <tr class="group transition hover:bg-slate-800/40">
+                    <tr class="group transition hover:bg-slate-800/40 problem-row" data-title="{{ problem.title|lower }}" data-difficulty="{{ problem.difficulty }}">
                         <td class="px-6 py-4 font-mono text-slate-500">{{ loop.index }}</td>
                         <td class="px-6 py-4 flex items-center">
                             <span class="font-medium text-white group-hover:text-indigo-200 transition">{{ problem.title }}</span>
-                            {% if problem.id in solved_ids %}
-                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full ml-3 translate-y-[-1px]">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                Solved
-                            </span>
-                            {% endif %}
                         </td>
                         <td class="px-6 py-4">
                             {% if problem.difficulty == 'Easy' %}
@@ -50,6 +64,25 @@
                             <span class="inline-flex rounded-full border border-amber-500/40 bg-amber-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-400">
                                 Medium
                             </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% set status = problem_statuses.get(problem.id) %}
+                            {% if status == 'passed' %}
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                Solved
+                            </span>
+                            {% elif status == 'partial' %}
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full">
+                                Partially Solved
+                            </span>
+                            {% elif status == 'failed' %}
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-500/15 border border-slate-500/30 px-2 py-0.5 rounded-full">
+                                In Progress
+                            </span>
+                            {% else %}
+                            <span class="text-slate-600 text-xs">-</span>
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 text-right">
@@ -65,4 +98,34 @@
         </div>
     </div>
 </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const difficultyFilter = document.getElementById('difficultyFilter');
+        const rows = document.querySelectorAll('.problem-row');
+
+        function filterTable() {
+            const query = searchInput.value.toLowerCase();
+            const diff = difficultyFilter.value;
+
+            rows.forEach(row => {
+                const title = row.dataset.title;
+                const difficulty = row.dataset.difficulty;
+                
+                const matchesSearch = title.includes(query);
+                const matchesDiff = diff === 'All' || difficulty === diff;
+
+                if (matchesSearch && matchesDiff) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', filterTable);
+        difficultyFilter.addEventListener('change', filterTable);
+    });
+</script>
 {% endblock %}

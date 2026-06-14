@@ -1,6 +1,7 @@
 <script>
     let storedHints = {};
     let storedSolution = '';
+    let hasRunCode = false;
 
     function detectLanguageMismatch(code, selectedLanguage) {
         const lines = code.split('\n').filter(l => l.trim().length > 0);
@@ -161,7 +162,12 @@
         const getHintBtn = document.getElementById('getHintBtn');
 
         if (!problemStatement && !myCode) {
-            alert('Please enter a problem statement or your code to get hints.');
+            showInfoModal('Please enter a problem statement or your code to get hints.', 'warn', 'Missing Input');
+            return;
+        }
+
+        if (!hasRunCode) {
+            showInfoModal('Please run the code at least once before asking for hints.', 'info', 'Run Code First');
             return;
         }
 
@@ -194,13 +200,13 @@
                     if (btn2) btn2.classList.remove('hidden');
                     hintsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 } else {
-                    alert(data.error || 'Unexpected response from server. Please try again.');
+                    showInfoModal(data.error || 'Unexpected response from server. Please try again.', 'error', 'Error');
                 }
             } else {
-                alert(data.error || 'Failed to get hints. Please try again.');
+                showInfoModal(data.error || 'Failed to get hints. Please try again.', 'error', 'Error');
             }
         } catch (error) {
-            alert(`Network Error: ${error.message}`);
+            showInfoModal(`Network Error: ${error.message}`, 'error', 'Network Error');
         } finally {
             getHintBtn.disabled = false;
             getHintBtn.textContent = 'Get Hint';
@@ -215,7 +221,7 @@
         const runCodeBtn = document.getElementById('runCodeBtn');
 
         if (!myCode) {
-            alert('Please enter some code to run.');
+            showInfoModal('Please enter some code to run.', 'warn', 'No Code Found');
             return;
         }
 
@@ -243,6 +249,7 @@
             });
             const data = await response.json();
             if (response.ok) {
+                hasRunCode = true;
                 displayExecutionResults(data);
             } else {
                 showError(data.error || 'Failed to run code. Please try again.');
