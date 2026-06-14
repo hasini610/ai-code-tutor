@@ -128,57 +128,126 @@ def parse_llm_json_response(raw_text: str) -> dict:
         return data
 
 
+def _char_diff_summary(expected: str, actual: str) -> str:
+    """Produce a brief character-level diff summary for output mismatches."""
+    if expected == actual:
+        return '(outputs match)'
+    if not expected:
+        return f'Expected empty string but got {repr(actual)}'
+    if not actual:
+        return f'Got empty string but expected {repr(expected)}'
+    # Find first differing character
+    for i, (e, a) in enumerate(zip(expected, actual)):
+        if e != a:
+            ctx_e = repr(expected[max(0,i-3):i+6])
+            ctx_a = repr(actual[max(0,i-3):i+6])
+            return (f'First diff at char index {i}: '
+                    f'expected {ctx_e} but got {ctx_a}')
+    # One string is a prefix of the other
+    if len(expected) > len(actual):
+        return f'Output too short — missing trailing {repr(expected[len(actual):])!r}'
+    return f'Output too long — extra trailing {repr(actual[len(expected):])!r}'
+
+
 def format_failing_tests_for_prompt(failing_tests: list) -> str:
     if not failing_tests:
         return 'No failing test results were provided. Infer likely issues from the code and problem statement.'
     blocks = []
     for case in failing_tests:
-        blocks.append(
-            f"- {case.get('label', 'Test case')} ({case.get('status', 'unknown')}):\n"
-            f"  Message: {case.get('message', '')}\n"
-            f"  stdin: {repr(case.get('stdin', ''))}\n"
-            f"  Expected stdout: {repr(case.get('expected', ''))}\n"
-            f"  Actual stdout: {repr(case.get('actual', ''))}"
+        status = case.get('status', 'unknown')
+        expected = case.get('expected', '')
+        actual = case.get('actual', '')
+        compile_out = case.get('compile_output', '') or ''
+        stderr_out = case.get('stderr', '') or ''
+        diff = _char_diff_summary(expected, actual) if status == 'failed' else ''
+        block = (
+            f"- {case.get('label', 'Test case')} [{status.upper()}]\n"
+            f"  stdin            : {repr(case.get('stdin', ''))}\n"
+            f"  Expected stdout  : {repr(expected)}\n"
+            f"  Actual stdout    : {repr(actual)}\n"
+            f"  Judge message    : {case.get('message', '')}\n"
         )
-    return '\n'.join(blocks)
+        if diff:
+            block += f"  Output diff      : {diff}\n"
+        if compile_out:
+            block += f"  Compile output   : {compile_out.strip()[:400]}\n"
+        if stderr_out:
+            block += f"  Stderr           : {stderr_out.strip()[:400]}\n"
+        blocks.append(block.rstrip())
+    return '\n\n'.join(blocks)
 
 
-COACH_SYSTEM_PROMPT = """You are a Socratic coding tutor and elite technical interviewer at a top-tier software company.
+COACH_SYSTEM_PROMPT = """You are an elite, hyper-precise coding coach and diagnostic engine. Your ONLY job is to identify the SINGLE most impactful bug in the student's code and guide them to fix it using three tightly scoped, progressively revealing hints.
 
-Your job is to coach a candidate who is stuck on a coding problem using the Socratic method. You will receive:
+You will receive:
 - The full problem statement
-- Their current (broken or failing) solution
-- Concrete failing test case details (stdin, expected vs actual output, errors)
+- The student's code (in a specific language)
+- Concrete test case data: stdin, expected stdout, actual stdout, and any compiler/runtime error messages
 
-Analyze their code and identify the ROOT issue. Prioritize problems in this strict order:
-1. CONCEPT: Do they fundamentally misunderstand the problem, algorithm, or required approach?
-2. SYNTAX/STRUCTURE: Are there language-level errors, wrong constructs, or logical structure issues?
-3. EDGE CASES: Are there specific inputs or boundary conditions they have not handled?
-4. COMPLEXITY: Is their solution correct but uses an inefficient algorithm or data structure?
+═══════════════════════════════════════════
+STEP 1 — DIAGNOSTIC TRIAGE (internal, not shown to user)
+═══════════════════════════════════════════
+Perform these checks IN ORDER. Stop at the first issue found:
 
-Always address the HIGHEST priority issue first across all three hints.
+① COMPILATION / SYNTAX ERROR
+   - Scan the code character-by-character for broken syntax: missing semicolons, unmatched braces/brackets/parentheses, undeclared variables, wrong function signatures.
+   - If any compile_output or stderr contains "error:" lines, read them carefully and identify the EXACT line number and character.
+   - If a syntax error exists → this is the target bug. Go directly to hint generation.
 
-Respond ONLY with a valid JSON object. No markdown, no text outside JSON.
+② WRONG VARIABLE INITIALIZATION / LOOP BOUNDS
+   - Scan every loop (for/while) and every variable initialization.
+   - Compare the student's loop start, end, and step values against what the problem logically requires.
+   - Example: if the problem needs to process n elements and the loop starts at i=8 instead of i=0, this is a direct, concrete bug. Note the variable name and the wrong value.
+   - If such a deviation exists → this is the target bug.
 
-If their solution clearly passes all provided failing tests and is correct, respond:
-{"status": "correct", "message": "brief encouraging message", "hint1": "", "hint2": "", "hint3": ""}
+③ OUTPUT FORMAT / PRINTF MISMATCH
+   - Compare the "Expected stdout" vs "Actual stdout" character-by-character.
+   - Look for: extra spaces, missing spaces, wrong delimiters (comma vs space), wrong newlines, extra characters, missing characters.
+   - Example: if expected is "5 4 3 2 1" but actual is "5,4,3,2,1" → the printf/print separator is wrong.
+   - If a format difference exists → this is the target bug.
 
-Otherwise respond:
+④ LOGICAL / ALGORITHMIC ERROR
+   - Only if none of the above apply: analyze the algorithm's correctness against the problem requirements.
+
+═══════════════════════════════════════════
+STEP 2 — HINT GENERATION (strict tiered progression)
+═══════════════════════════════════════════
+Generate exactly THREE hints targeting ONLY the bug found in Step 1.
+
+hint1 — THE NUDGE (Localization):
+   - Point to the EXACT location: name the specific line, variable, function, or printf statement where the anomaly lives.
+   - Do NOT explain why it's wrong yet. Just make the student look there.
+   - Must be a question ending with "?"
+   - Example: "Have you closely examined how your loop variable `i` is initialized in the `for` loop on the line where you declare it?"
+
+hint2 — THE CONCEPTUAL LINK (Why it breaks):
+   - Explain the consequence of that specific anomaly in concrete terms.
+   - Reference the actual wrong value or wrong output seen in the test results.
+   - Must be a question ending with "?"
+   - Example: "If your loop starts at index 8 instead of 0, what happens to the first 8 elements that were read from stdin — are they ever processed?"
+
+hint3 — THE ACTIONABLE STEP (How to fix, no code):
+   - Give a concrete, specific task the student must perform to resolve the issue.
+   - Reference the exact variable name, line behavior, or format character they need to change.
+   - Must be a question ending with "?"
+   - Example: "What would happen if you changed the starting value of `i` to match the first valid index of your array, and would that cause all elements to be visited?"
+
+═══════════════════════════════════════════
+ABSOLUTE RULES
+═══════════════════════════════════════════
+- Respond ONLY with a valid JSON object. Zero text outside JSON.
+- NEVER reveal actual code or pseudocode in any hint field.
+- NEVER give generic, vague advice like "check your logic" or "think about the algorithm" — every hint must reference a SPECIFIC named element from their code.
+- ALL three hints must end with a "?"
+- NEVER include a "solution" field.
+- The three hints must escalate in specificity — hint1 is vague location, hint2 is specific consequence, hint3 is specific action.
+- If the student's code appears correct (all tests passing), respond with status "correct".
+
+JSON format when hints are needed:
 {"status": "needs_hints", "hint1": "...", "hint2": "...", "hint3": "..."}
 
-The three hints MUST follow the Socratic method — each hint MUST be phrased as a QUESTION that guides the student to discover the answer themselves:
-1. hint1 — CONCEPTUAL QUESTION: Ask a broad question about problem understanding, the right approach, or a key pattern. Do NOT state what is wrong — make them think about it.
-2. hint2 — STRUCTURAL QUESTION: Ask a more directed question about their specific algorithm, data structures, or step-by-step logic. Still a question, not a statement.
-3. hint3 — TARGETED QUESTION: Ask a very specific question pointing to the exact flaw — a particular edge case, a specific line behaviour, or a subtle logical mistake. Still NO code revealed.
-
-Strict rules:
-- NEVER include a "solution" field
-- NEVER output fenced code blocks or any code syntax in any hint
-- NEVER state the answer — ALWAYS ask a guiding question
-- ALL THREE hints must end with a question mark (?)
-- Do not spell out the fix as literal code or pseudo-code
-- Reference failing tests when relevant (wrong output, runtime error, etc.)
-- Be concise but insightful (1-3 sentences per hint, must end with ?)"""
+JSON format when code is correct:
+{"status": "correct", "message": "brief encouraging message", "hint1": "", "hint2": "", "hint3": ""}"""
 
 
 def format_problem_description(text: str) -> str:
@@ -772,6 +841,26 @@ def problem_coach(problem_id: int):
         if language not in JUDGE0_LANGUAGE_IDS:
             return jsonify({'error': f'Unsupported language: {language}'}), 400
 
+        # Add line numbers to source code so the model can reference exact lines
+        numbered_code = '\n'.join(
+            f'{i+1:>3}: {line}' for i, line in enumerate(source_code.splitlines())
+        )
+
+        # Pull compile_output from any failing test to surface it to the model
+        compile_errors = ''
+        for ft in failing_tests:
+            co = (ft.get('compile_output') or '').strip()
+            se = (ft.get('stderr') or '').strip()
+            if co:
+                compile_errors = co[:600]
+                break
+            if se:
+                compile_errors = se[:600]
+
+        compile_section = ''
+        if compile_errors:
+            compile_section = f"\nCOMPILER / RUNTIME ERRORS (check these FIRST):\n{compile_errors}\n"
+
         user_prompt = f"""Problem title: {record.get('title', 'Unknown')}
 Difficulty: {record.get('difficulty', 'Unknown')}
 
@@ -780,13 +869,17 @@ Problem statement:
 
 Language: {language}
 
-Candidate code:
-{source_code}
-
-Failing / errored test cases from our automated judge:
+Candidate code (with line numbers):
+{numbered_code}
+{compile_section}
+Failing / errored test cases from our automated judge (read Expected vs Actual carefully):
 {format_failing_tests_for_prompt(failing_tests)}
 
-Return JSON only. Use status "needs_hints" with hint1 (Conceptual), hint2 (Structural), hint3 (Solution-revealing)."""
+Instructions:
+- Follow the DIAGNOSTIC TRIAGE order from your system prompt.
+- Identify the SINGLE most critical bug using the numbered source lines above.
+- Produce hint1 (Nudge — exact location), hint2 (Conceptual Link — why it breaks), hint3 (Actionable Step — what to change).
+- Return valid JSON only, no markdown."""
 
         response = groq_client.chat.completions.create(
             model='llama-3.3-70b-versatile',
@@ -794,7 +887,7 @@ Return JSON only. Use status "needs_hints" with hint1 (Conceptual), hint2 (Struc
                 {'role': 'system', 'content': COACH_SYSTEM_PROMPT},
                 {'role': 'user', 'content': user_prompt},
             ],
-            temperature=0.6,
+            temperature=0.2,
             max_tokens=1200,
         )
 
