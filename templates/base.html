@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}DSA Coding Platform{% endblock %}</title>
+    <title>{% block title %}CodeCoach{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,8 +22,8 @@
     <nav class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
             <a href="{{ url_for('home') }}" class="group flex items-center gap-2">
-                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-xs font-bold text-white shadow-lg shadow-indigo-500/25">DSA</span>
-                <span class="text-lg font-semibold tracking-tight text-white group-hover:text-indigo-200 transition">DSA Coding Platform</span>
+                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-xs font-bold text-white shadow-lg shadow-indigo-500/25">CC</span>
+                <span class="text-lg font-semibold tracking-tight text-white group-hover:text-indigo-200 transition">CodeCoach</span>
             </a>
             <div class="flex items-center gap-3">
                 <a href="{{ url_for('problems_list') }}"
