@@ -345,23 +345,40 @@ def evaluate_test_case(source_code: str, language: str, test_case: dict, index: 
             'stdin': stdin,
         }
 
+    # Ensure stdin ends with a newline so C scanf loops terminate correctly
+    if stdin and not stdin.endswith('\n'):
+        stdin = f"{stdin}\n"
+
     execution = execute_code(source_code, language, stdin=stdin)
     actual = clean_output(execution.get('stdout'))
     status_id = execution.get('status_id')
+    status_desc = execution.get('status') or ''
+
+    # Map Judge0 status IDs to user-friendly messages
+    friendly_msg = ''
+    if status_id == 5:
+        friendly_msg = 'Time Limit Exceeded'
+    elif status_id == 6:
+        friendly_msg = 'Memory Limit Exceeded'
+    elif status_id == 7:
+        # Runtime error – could be killed (SIGKILL) or other crash
+        friendly_msg = 'Runtime Error'
+        # Include any stderr/killed info
+        if execution.get('stderr'):
+            friendly_msg += f": {extract_first_line(execution.get('stderr'))}"
+        elif execution.get('error'):
+            friendly_msg += f": {extract_first_line(execution.get('error'))}"
+    elif status_id and status_id != JUDGE0_ACCEPTED_STATUS_ID:
+        friendly_msg = status_desc or 'Execution failed'
 
     if execution.get('error') and status_id != JUDGE0_ACCEPTED_STATUS_ID:
-        detail = (
-            execution.get('compile_output')
-            or execution.get('stderr')
-            or execution.get('error')
-            or 'Execution failed'
-        )
+        detail = execution.get('compile_output') or execution.get('stderr') or execution.get('error') or 'Execution failed'
         return {
             'index': index,
             'label': label,
             'passed': False,
             'status': 'error',
-            'message': str(detail).strip()[:500],
+            'message': friendly_msg or str(detail).strip()[:500],
             'expected': expected,
             'actual': actual,
             'stdin': stdin,
@@ -374,7 +391,7 @@ def evaluate_test_case(source_code: str, language: str, test_case: dict, index: 
             'label': label,
             'passed': False,
             'status': 'error',
-            'message': str(detail).strip()[:500],
+            'message': friendly_msg or str(detail).strip()[:500],
             'expected': expected,
             'actual': actual,
             'stdin': stdin,
@@ -488,7 +505,7 @@ def execute_code(script, language='python', stdin=''):
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('problems_list'))
     
     next_page = request.args.get('next')
     
@@ -521,7 +538,7 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('problems_list'))
         
     next_page = request.args.get('next')
         
@@ -534,7 +551,7 @@ def login():
             login_user(user)
             if next_page:
                 return redirect(next_page)
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('problems_list'))
         else:
             flash('Invalid email or password.', 'error')
             
@@ -547,7 +564,11 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/')
-def dashboard():
+def home():
+    return render_template('landing.html')
+
+@app.route('/problems')
+def problems_list():
     data = load_problems_dataset()
     problems = data.get('problems', [])
     counts = data.get('counts_by_difficulty', {})
