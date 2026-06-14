@@ -3,9 +3,78 @@
 {% block title %}{{ problem.title }} — DSA Coding Platform{% endblock %}
 
 {% block head_extra %}
+<!-- CodeMirror CSS & JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+
 <!-- Split.js for resizable columns -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.0/split.min.js"></script>
 <style>
+    /* Custom VS Code Dark Theme for CodeMirror */
+    .CodeMirror {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 14px;
+        height: 100% !important;
+        width: 100% !important;
+        background: #020617 !important; /* slate-950 background */
+        color: #d4d4d4 !important;
+    }
+    .CodeMirror-gutters {
+        background: #090d16 !important; /* slate-900/950 */
+        border-right: 1px solid #1e293b !important; /* slate-800 */
+    }
+    .CodeMirror-linenumber {
+        color: #64748b !important; /* slate-500 */
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+    .CodeMirror-cursor {
+        border-left: 2px solid #528bff !important;
+    }
+    .CodeMirror-selected {
+        background: #264f78 !important;
+    }
+
+    /* Syntax Highlighting matching VS Code colors */
+    .cm-keyword { color: #569cd6 !important; font-weight: bold; }
+    .cm-def { color: #dcdcaa !important; }
+    .cm-variable { color: #9cdcfe !important; }
+    .cm-variable-2 { color: #9cdcfe !important; }
+    .cm-variable-3 { color: #4ec9b0 !important; }
+    .cm-type { color: #4ec9b0 !important; }
+    .cm-comment { color: #6a9955 !important; font-style: italic; }
+    .cm-string { color: #ce9178 !important; }
+    .cm-string-2 { color: #ce9178 !important; }
+    .cm-number { color: #b5cea8 !important; }
+    .cm-operator { color: #d4d4d4 !important; }
+    .cm-builtin { color: #4ec9b0 !important; }
+    .cm-property { color: #9cdcfe !important; }
+    .cm-meta { color: #c586c0 !important; }
+    .cm-qualifier { color: #569cd6 !important; }
+    .cm-atom { color: #569cd6 !important; }
+    .cm-tag { color: #569cd6 !important; }
+    .cm-attribute { color: #9cdcfe !important; }
+
+    /* Rainbow Brackets and Matching Bracket styling */
+    .cm-rainbow-0 { color: #ffd700 !important; } /* Yellow/Gold */
+    .cm-rainbow-1 { color: #da70d6 !important; } /* Orchid/Magenta */
+    .cm-rainbow-2 { color: #17a2b8 !important; } /* Cyan/Blue */
+    
+    .CodeMirror-matchingbracket {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-bottom: 2px solid #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
     /* Split.js Gutter styling */
     .gutter {
         background-color: #0f172a; /* slate-900 */
@@ -271,6 +340,81 @@
     const PROBLEM_ID = {{ problem.id }};
     const IS_AUTHENTICATED = {{ 'true' if current_user.is_authenticated else 'false' }};
     let lastTestResults = null;
+    let editorInstance = null;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const textarea = document.getElementById('myCode');
+        editorInstance = CodeMirror.fromTextArea(textarea, {
+            lineNumbers: true,
+            theme: 'default',
+            mode: 'python',
+            indentUnit: 4,
+            tabSize: 4,
+            lineWrapping: true,
+            autoCloseBrackets: true,
+            matchBrackets: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                "Tab": function(cm) {
+                    var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+                    cm.replaceSelection(spaces);
+                },
+                "Enter": "newlineAndIndent"
+            }
+        });
+
+        const langSelect = document.getElementById('languageSelect');
+        function updateEditorMode() {
+            const lang = langSelect.value;
+            let mode = 'python';
+            if (lang === 'java') mode = 'text/x-java';
+            else if (lang === 'c') mode = 'text/x-csrc';
+            editorInstance.setOption('mode', mode);
+        }
+        langSelect.addEventListener('change', updateEditorMode);
+        updateEditorMode();
+
+        let bracketMarks = [];
+        function updateRainbowBrackets(cm) {
+            bracketMarks.forEach(mark => mark.clear());
+            bracketMarks = [];
+            let depth = 0;
+            cm.eachLine(lineHandle => {
+                const lineText = lineHandle.text;
+                const lineNum = cm.getLineNumber(lineHandle);
+                for (let ch = 0; ch < lineText.length; ch++) {
+                    const char = lineText[ch];
+                    if (char === '(' || char === '[' || char === '{') {
+                        const colorIndex = depth % 3;
+                        const mark = cm.markText(
+                            { line: lineNum, ch: ch },
+                            { line: lineNum, ch: ch + 1 },
+                            { className: `cm-rainbow-${colorIndex} font-bold` }
+                        );
+                        bracketMarks.push(mark);
+                        depth++;
+                    } else if (char === ')' || char === ']' || char === '}') {
+                        depth = Math.max(0, depth - 1);
+                        const colorIndex = depth % 3;
+                        const mark = cm.markText(
+                            { line: lineNum, ch: ch },
+                            { line: lineNum, ch: ch + 1 },
+                            { className: `cm-rainbow-${colorIndex} font-bold` }
+                        );
+                        bracketMarks.push(mark);
+                    }
+                }
+            });
+        }
+
+        editorInstance.on('change', function(cm) {
+            editorInstance.save();
+            updateRainbowBrackets(cm);
+        });
+
+        // Initialize rainbow brackets on first load
+        updateRainbowBrackets(editorInstance);
+    });
 
     function closeGuestModal() {
         const modal = document.getElementById('guestSuccessModal');
@@ -293,7 +437,11 @@
     // Reset code helper
     function resetCode() {
         if (confirm("Are you sure you want to reset your code? This will clear all your current edits.")) {
-            document.getElementById('myCode').value = '';
+            if (editorInstance) {
+                editorInstance.setValue('');
+            } else {
+                document.getElementById('myCode').value = '';
+            }
         }
     }
 
@@ -395,6 +543,14 @@
         if (!sourceCode) {
             alert('Please write some code before submitting.');
             return;
+        }
+
+        const detected = detectLanguageMismatch(sourceCode, language);
+        if (detected) {
+            const confirmed = await showMismatchModal(detected, language);
+            if (!confirmed) {
+                return;
+            }
         }
 
         // Clear previous run-code or submission execution outputs

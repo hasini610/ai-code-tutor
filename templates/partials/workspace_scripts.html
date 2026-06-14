@@ -2,6 +2,151 @@
     let storedHints = {};
     let storedSolution = '';
 
+    function detectLanguageMismatch(code, selectedLanguage) {
+        const lines = code.split('\n').filter(l => l.trim().length > 0);
+        if (lines.length < 5) return null; // Ignore short snippets
+
+        let pythonScore = 0;
+        let javaScore = 0;
+        let cScore = 0;
+
+        const pythonSignatures = [
+            /def\s+\w+\(/,
+            /import\s+[a-zA-Z_]/,
+            /elif\s+/,
+            /:\s*$/, // colon at end of lines
+            /print\(/,
+            /None/,
+            /True/,
+            /False/,
+            /class\s+\w+(\(\w+\))?:/,
+            /self\./
+        ];
+
+        const javaSignatures = [
+            /public\s+class\s+/,
+            /System\.out\.print/,
+            /public\s+static\s+void\s+main/,
+            /import\s+java\./,
+            /new\s+[A-Z]\w*\(/,
+            /String\[\]\s+args/,
+            /class\s+\w+\s+implements\s+/,
+            /class\s+\w+\s+extends\s+/
+        ];
+
+        const cSignatures = [
+            /#include\s*</,
+            /printf\(/,
+            /scanf\(/,
+            /int\s+main\s*\(/,
+            /struct\s+\w+\s*\{/,
+            /typedef\s+struct/
+        ];
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('#') || trimmed.startsWith('//') || trimmed.startsWith('/*')) return;
+
+            pythonSignatures.forEach(sig => { if (sig.test(line)) pythonScore++; });
+            javaSignatures.forEach(sig => { if (sig.test(line)) javaScore++; });
+            cSignatures.forEach(sig => { if (sig.test(line)) cScore++; });
+        });
+
+        const scores = { 'python': pythonScore, 'java': javaScore, 'c': cScore };
+        const totalScore = pythonScore + javaScore + cScore;
+
+        if (totalScore === 0) return null;
+
+        let maxLang = null;
+        let maxScore = 0;
+        for (const [lang, score] of Object.entries(scores)) {
+            if (score > maxScore) {
+                maxScore = score;
+                maxLang = lang;
+            }
+        }
+
+        if (maxLang && maxLang !== selectedLanguage && (maxScore / totalScore) > 0.60) {
+            return maxLang;
+        }
+
+        return null;
+    }
+
+    let mismatchResolve = null;
+
+    function ensureLanguageMismatchModal() {
+        if (document.getElementById('languageMismatchModal')) return;
+
+        const modalHtml = `
+        <div id="languageMismatchModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
+            <div class="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl p-6 text-center transform transition-all scale-95 opacity-0 duration-200" id="mismatchModalContent">
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/20 mb-4">
+                    <span class="text-2xl">⚠️</span>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Language Mismatch?</h3>
+                <p id="mismatchModalText" class="text-sm text-slate-300 mb-6 leading-relaxed">
+                    Your code looks like it might be in another language. Are you sure you want to proceed?
+                </p>
+                <div class="flex flex-col gap-3">
+                    <button id="mismatchConfirmBtn" class="w-full rounded-lg bg-indigo-600 hover:bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-600/25 transition">
+                        Yes, run it anyway
+                    </button>
+                    <button id="mismatchCancelBtn" class="w-full rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white transition">
+                        No, let me change language
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+        const div = document.createElement('div');
+        div.innerHTML = modalHtml;
+        document.body.appendChild(div.firstElementChild);
+    }
+
+    function showMismatchModal(detected, selected) {
+        ensureLanguageMismatchModal();
+        const modal = document.getElementById('languageMismatchModal');
+        const content = document.getElementById('mismatchModalContent');
+        const textEl = document.getElementById('mismatchModalText');
+
+        const detName = detected.charAt(0).toUpperCase() + detected.slice(1);
+        const selName = selected.charAt(0).toUpperCase() + selected.slice(1);
+
+        textEl.innerHTML = `Your code looks like <strong>${detName}</strong>, but <strong>${selName}</strong> is selected. Are you sure you want to run it?`;
+
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+
+        return new Promise((resolve) => {
+            mismatchResolve = resolve;
+
+            document.getElementById('mismatchConfirmBtn').onclick = function() {
+                closeMismatchModal();
+                resolve(true);
+            };
+
+            document.getElementById('mismatchCancelBtn').onclick = function() {
+                closeMismatchModal();
+                resolve(false);
+            };
+        });
+    }
+
+    function closeMismatchModal() {
+        const modal = document.getElementById('languageMismatchModal');
+        const content = document.getElementById('mismatchModalContent');
+        if (!modal || !content) return;
+
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 200);
+    }
+
     function getProblemStatement() {
         const el = document.getElementById('problemStatement');
         if (!el) return '';
@@ -39,56 +184,16 @@
                 if (data.status === 'correct') {
                     showCorrectCodeMessage(data.message);
                 } else if (data.hint1) {
+                    storedHints = { hint1: data.hint1, hint2: data.hint2, hint3: data.hint3 };
                     storedSolution = data.solution || '# Solution not available';
-                    
-                    const chatContainer = document.getElementById('chat-container');
-                    if (chatContainer) {
-                        hintsSection.classList.remove('hidden');
-                        
-                        // Add User message
-                        const userMsg = document.createElement('div');
-                        userMsg.className = 'flex gap-3 flex-row-reverse';
-                        userMsg.innerHTML = `
-                            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0 text-white font-bold text-xs">U</div>
-                            <div class="bg-indigo-600 text-white rounded-2xl rounded-tr-sm p-3 text-sm shadow-sm">I'm stuck. Can I get a hint?</div>
-                        `;
-                        chatContainer.appendChild(userMsg);
-
-                        // Add AI message
-                        const aiMsg = document.createElement('div');
-                        aiMsg.className = 'flex gap-3 mt-4 mb-2';
-                        
-                        const aiContent = `
-                            <div class="space-y-3">
-                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-                                    <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider block mb-1">Hint 1: Conceptual</span>
-                                    <p class="text-slate-300">${data.hint1}</p>
-                                </div>
-                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-                                    <span class="text-xs font-bold text-purple-400 uppercase tracking-wider block mb-1">Hint 2: Structural</span>
-                                    <p class="text-slate-300">${data.hint2}</p>
-                                </div>
-                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-                                    <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-1">Hint 3: Specifics</span>
-                                    <p class="text-slate-300">${data.hint3}</p>
-                                </div>
-                                <button onclick="showSolution()" class="text-xs text-emerald-400 hover:text-emerald-300 mt-2">Reveal Complete Solution →</button>
-                            </div>
-                        `;
-
-                        aiMsg.innerHTML = `
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-lg">AI</div>
-                            <div class="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-sm p-4 text-sm text-slate-300 shadow-sm leading-relaxed flex-1">
-                                ${aiContent}
-                            </div>
-                        `;
-                        chatContainer.appendChild(aiMsg);
-                        
-                        document.getElementById('solutionCode').textContent = storedSolution;
-                        
-                        hintsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        chatContainer.lastElementChild.scrollIntoView({ behavior: 'smooth' });
-                    }
+                    document.getElementById('hint1').textContent = storedHints.hint1;
+                    document.getElementById('hint2').textContent = storedHints.hint2;
+                    document.getElementById('hint3').textContent = storedHints.hint3;
+                    document.getElementById('solutionCode').textContent = storedSolution;
+                    hintsSection.classList.remove('hidden');
+                    hintsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    document.getElementById('hint1Card').classList.remove('hidden');
+                    document.getElementById('showHint2Btn').classList.remove('hidden');
                 } else {
                     alert(data.error || 'Unexpected response from server. Please try again.');
                 }
@@ -113,6 +218,14 @@
         if (!myCode) {
             alert('Please enter some code to run.');
             return;
+        }
+
+        const detected = detectLanguageMismatch(myCode, language);
+        if (detected) {
+            const confirmed = await showMismatchModal(detected, language);
+            if (!confirmed) {
+                return;
+            }
         }
 
         clearExecutionOutput();
@@ -191,16 +304,25 @@
     }
 
     function showHint(hintNumber) {
-        // Obsolete in chat UI
-    }
-
-    function showSolution() {
-        const solutionSection = document.getElementById('solutionSection');
-        const showSolutionBtn = document.getElementById('showSolutionBtn');
-        if (!solutionSection) return;
-        solutionSection.classList.remove('hidden');
-        if (showSolutionBtn) showSolutionBtn.classList.add('hidden');
-        solutionSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (hintNumber === 2) {
+            const card2 = document.getElementById('hint2Card');
+            if (card2) {
+                card2.classList.remove('hidden');
+                const btn2 = document.getElementById('showHint2Btn');
+                if (btn2) btn2.classList.add('hidden');
+                const btn3 = document.getElementById('showHint3Btn');
+                if (btn3) btn3.classList.remove('hidden');
+                card2.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        } else if (hintNumber === 3) {
+            const card3 = document.getElementById('hint3Card');
+            if (card3) {
+                card3.classList.remove('hidden');
+                const btn3 = document.getElementById('showHint3Btn');
+                if (btn3) btn3.classList.add('hidden');
+                card3.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
     }
 
     function showCorrectCodeMessage(message) {
@@ -208,22 +330,27 @@
         document.getElementById('hintsSection').classList.add('hidden');
         document.getElementById('correctMessage').textContent = message || 'Your code is correct! Well done.';
         document.getElementById('correctSection').classList.remove('hidden');
-        document.getElementById('correctSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('correctSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function clearPreviousHints() {
         const correctSection = document.getElementById('correctSection');
-        if (correctSection) correctSection.classList.add('hidden');
-        
         const hintsSection = document.getElementById('hintsSection');
+        const hint1Card = document.getElementById('hint1Card');
+        const hint2Card = document.getElementById('hint2Card');
+        const hint3Card = document.getElementById('hint3Card');
+        const showHint2Btn = document.getElementById('showHint2Btn');
+        const showHint3Btn = document.getElementById('showHint3Btn');
+
+        if (correctSection) correctSection.classList.add('hidden');
         if (hintsSection) hintsSection.classList.add('hidden');
-        
-        const solutionSection = document.getElementById('solutionSection');
-        if (solutionSection) solutionSection.classList.add('hidden');
-        
-        const chatContainer = document.getElementById('chat-container');
-        if (chatContainer) chatContainer.innerHTML = '';
-        
+        if (hint1Card) hint1Card.classList.add('hidden');
+        if (hint2Card) hint2Card.classList.add('hidden');
+        if (hint3Card) hint3Card.classList.add('hidden');
+        if (showHint2Btn) showHint2Btn.classList.add('hidden');
+        if (showHint3Btn) showHint3Btn.classList.add('hidden');
+
+        storedHints = {};
         storedSolution = '';
     }
 </script>

@@ -135,14 +135,20 @@ def format_failing_tests_for_prompt(failing_tests: list) -> str:
     return '\n'.join(blocks)
 
 
-COACH_SYSTEM_PROMPT = """You are an elite technical interviewer at a top-tier software company.
+COACH_SYSTEM_PROMPT = """You are a Socratic coding tutor and elite technical interviewer at a top-tier software company.
 
-Your job is to coach a candidate who is stuck on a coding problem. You will receive:
+Your job is to coach a candidate who is stuck on a coding problem using the Socratic method. You will receive:
 - The full problem statement
 - Their current (broken or failing) solution
 - Concrete failing test case details (stdin, expected vs actual output, errors)
 
-Analyze their approach like an interviewer: identify misunderstandings of the problem, edge cases they missed, logical flaws, complexity issues, and I/O mismatches suggested by the test failures.
+Analyze their code and identify the ROOT issue. Prioritize problems in this strict order:
+1. CONCEPT: Do they fundamentally misunderstand the problem, algorithm, or required approach?
+2. SYNTAX/STRUCTURE: Are there language-level errors, wrong constructs, or logical structure issues?
+3. EDGE CASES: Are there specific inputs or boundary conditions they have not handled?
+4. COMPLEXITY: Is their solution correct but uses an inefficient algorithm or data structure?
+
+Always address the HIGHEST priority issue first across all three hints.
 
 Respond ONLY with a valid JSON object. No markdown, no text outside JSON.
 
@@ -152,17 +158,19 @@ If their solution clearly passes all provided failing tests and is correct, resp
 Otherwise respond:
 {"status": "needs_hints", "hint1": "...", "hint2": "...", "hint3": "..."}
 
-The three hints MUST be our signature progressive levels:
-1. hint1 — CONCEPTUAL: high-level problem framing, patterns, or invariant to think about. No code.
-2. hint2 — STRUCTURAL: algorithm, data structures, and step-by-step plan. No complete implementation.
-3. hint3 — SOLUTION-REVEALING: very specific guidance (pseudo-steps, key insight, tricky edge case) but still NO copy-pasteable code blocks, no full functions, no language-specific syntax they can paste.
+The three hints MUST follow the Socratic method — each hint MUST be phrased as a QUESTION that guides the student to discover the answer themselves:
+1. hint1 — CONCEPTUAL QUESTION: Ask a broad question about problem understanding, the right approach, or a key pattern. Do NOT state what is wrong — make them think about it.
+2. hint2 — STRUCTURAL QUESTION: Ask a more directed question about their specific algorithm, data structures, or step-by-step logic. Still a question, not a statement.
+3. hint3 — TARGETED QUESTION: Ask a very specific question pointing to the exact flaw — a particular edge case, a specific line behaviour, or a subtle logical mistake. Still NO code revealed.
 
 Strict rules:
 - NEVER include a "solution" field
-- NEVER output fenced code blocks or multi-line code snippets in any hint
-- Do not spell out the answer as literal code
+- NEVER output fenced code blocks or any code syntax in any hint
+- NEVER state the answer — ALWAYS ask a guiding question
+- ALL THREE hints must end with a question mark (?)
+- Do not spell out the fix as literal code or pseudo-code
 - Reference failing tests when relevant (wrong output, runtime error, etc.)
-- Be concise but insightful (2-4 sentences per hint)"""
+- Be concise but insightful (1-3 sentences per hint, must end with ?)"""
 
 
 def format_problem_description(text: str) -> str:
@@ -748,34 +756,36 @@ def get_hints():
             parts.append(f"status: {execution_result.get('status', 'unknown')}")
             exec_context = ' | '.join(parts) if parts else 'No output produced.'
         
-        # System prompt for DSA Coach
-        system_prompt = """You are a DSA Coach. Analyze the given problem statement and user code for logical errors or efficiency issues. 
+        # System prompt for DSA Coach (Socratic method)
+        system_prompt = """You are a Socratic DSA Coach. Analyze the given problem statement and user code.
 
         CRITICAL: You must respond ONLY with a valid JSON object. No other text, no explanations, no markdown formatting.
-        
+
         IMPORTANT: First determine if the code is already correct by checking:
         1. Does the code execute without errors?
         2. Does the code produce the expected output for the given problem?
         3. Is the code well-structured and follows best practices?
-        
+
         If the code is already correct and produces the expected output, respond with:
-        {"status": "correct", "message": "Your code is already correct! No hints needed.", "hint1": "", "hint2": "", "hint3": "", "solution": ""}
-        
-        Otherwise, respond with hints in this format:
-        {"status": "needs_hints", "hint1": "text", "hint2": "text", "hint3": "text", "solution": "code"}
-        
-        Constraints:
-        - ALWAYS check if code is correct first before providing hints
-        - If code executes successfully and produces reasonable output, consider it correct
-        - If code is correct, set status to "correct" and provide positive feedback
-        - Only provide hints if code has errors, inefficiencies, or can be improved
-        - The hints must be progressive (vague to specific)
-        - Hints MUST NOT contain any code snippets or the direct solution
-        - Hint 1 should be very general and conceptual
-        - Hint 2 should provide some guidance on approach
-        - Hint 3 should give more specific direction but still no code
-        - The solution should contain the complete, correct code implementation
-        - Focus on algorithmic thinking, data structures, and problem-solving strategies
+        {"status": "correct", "message": "Your code is already correct! No hints needed.", "hint1": "", "hint2": "", "hint3": ""}
+
+        Otherwise, identify the ROOT issue using this priority order:
+        1. CONCEPT: Does the student fundamentally misunderstand the problem or required algorithm?
+        2. SYNTAX/STRUCTURE: Are there language errors, wrong constructs, or logical structure problems?
+        3. EDGE CASES: Are there boundary conditions or special inputs not handled?
+        4. COMPLEXITY: Is the solution correct but inefficient?
+
+        Address the HIGHEST priority issue in all three hints. Respond in this format:
+        {"status": "needs_hints", "hint1": "question?", "hint2": "question?", "hint3": "question?"}
+
+        The Socratic method rules — ALL hints MUST be phrased as QUESTIONS:
+        - hint1: Broad conceptual question — make them think about the problem approach
+        - hint2: More directed question about their algorithm or structure
+        - hint3: Specific question pointing at the exact flaw without revealing the fix
+        - EVERY hint must end with a question mark (?)
+        - NEVER state what is wrong — ALWAYS ask a guiding question
+        - NEVER include code snippets, pseudo-code, or the direct solution in any hint
+        - NEVER include a solution field
         - DO NOT include any text outside the JSON object
         - DO NOT use markdown formatting"""
         
@@ -791,10 +801,10 @@ def get_hints():
         Based on this and the code provided, give the 3 leveled hints.
         
         If the code is correct, respond ONLY with:
-        {{"status": "correct", "message": "Your code is correct! Well done."}}
+        {{"status": "correct", "message": "Your code is correct! Well done.", "hint1": "", "hint2": "", "hint3": ""}}
         
         If the code needs improvement, respond ONLY with:
-        {{"status": "needs_hints", "hint1": "general hint", "hint2": "approach hint", "hint3": "specific hint", "solution": "complete code"}}
+        {{"status": "needs_hints", "hint1": "conceptual question?", "hint2": "structural question?", "hint3": "targeted question?"}}
         
         No other text, no explanations, just the JSON."""
         
