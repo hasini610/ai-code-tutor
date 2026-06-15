@@ -322,7 +322,7 @@
                         cm.replaceSelection('\n' + currentIndent + spaces + '\n' + currentIndent, 'end');
                         cm.setCursor({ line: cursor.line + 1, ch: currentIndent.length + indent });
                     } else {
-                        cm.execCommand('newlineAndIndentContinueComment');
+                        return CodeMirror.Pass;
                     }
                 }
             }
